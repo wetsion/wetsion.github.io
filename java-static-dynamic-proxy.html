@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="随笔,">
+  <meta name="keywords" content="Java,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="春江秋月何时了，往事知多少？">
-<meta name="keywords" content="随笔">
+<meta name="description" content="Java静态代理与动态代理的实现">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一场梦把我勾进了回忆的漩涡">
-<meta property="og:url" content="https://www.wetsion.site/dream-take-me-to-past.html">
+<meta property="og:title" content="Java中的静态代理和动态代理">
+<meta property="og:url" content="https://www.wetsion.site/java-static-dynamic-proxy.html">
 <meta property="og:site_name" content="秋月的博客">
-<meta property="og:description" content="春江秋月何时了，往事知多少？">
+<meta property="og:description" content="Java静态代理与动态代理的实现">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-18T14:08:46.343Z">
+<meta property="og:updated_time" content="2019-02-13T14:34:04.033Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一场梦把我勾进了回忆的漩涡">
-<meta name="twitter:description" content="春江秋月何时了，往事知多少？">
+<meta name="twitter:title" content="Java中的静态代理和动态代理">
+<meta name="twitter:description" content="Java静态代理与动态代理的实现">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://www.wetsion.site/dream-take-me-to-past.html">
+  <link rel="canonical" href="https://www.wetsion.site/java-static-dynamic-proxy.html">
 
 
 
 
 
-  <title>一场梦把我勾进了回忆的漩涡 | 秋月的博客</title>
+  <title>Java中的静态代理和动态代理 | 秋月的博客</title>
   
 
 
@@ -315,7 +315,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.wetsion.site/dream-take-me-to-past.html">
+    <link itemprop="mainEntityOfPage" href="https://www.wetsion.site/java-static-dynamic-proxy.html">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="秋月">
@@ -332,7 +332,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">一场梦把我勾进了回忆的漩涡</h2>
+          <h2 class="post-title" itemprop="name headline">Java中的静态代理和动态代理</h2>
         
 
         <div class="post-meta">
@@ -344,8 +344,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-18T00:00:00+08:00">
-                2019-06-18
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-11T00:00:00+08:00">
+                2019-01-11
               </time>
             
 
@@ -367,8 +367,19 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/生活随笔/" itemprop="url" rel="index">
-                    <span itemprop="name">生活随笔</span>
+                  <a href="/categories/后端/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
                   </a>
                 </span>
 
@@ -384,7 +395,7 @@
 
           
           
-             <span id="/dream-take-me-to-past.html" class="leancloud_visitors" data-flag-title="一场梦把我勾进了回忆的漩涡">
+             <span id="/java-static-dynamic-proxy.html" class="leancloud_visitors" data-flag-title="Java中的静态代理和动态代理">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -402,7 +413,7 @@
 
           
               <div class="post-description">
-                  春江秋月何时了，往事知多少？
+                  Java静态代理与动态代理的实现
               </div>
           
 
@@ -419,16 +430,18 @@
       
 
       
-        <blockquote>
-<p>春江秋月何时了，往事知多少？</p>
-</blockquote>
-<p>&emsp;&emsp;六月中旬的杭州，已经开始一只脚迈进了雨季，雨季，总是让人忧伤的。</p>
-<p>&emsp;&emsp;清早，湿润的凉风裹挟着丝丝细雨，从半开的窗户溜进屋，轻伏在我的脸上，将我从梦中拉出。睁开眼，梦中那熟悉的面孔和情形仍在脑海漂浮，像回音般想要在回荡中慢慢淡去。我一边努力挣扎着要抓住梦，一边慢慢坠入了回忆的漩涡。</p>
-<p>&emsp;&emsp;大概是十几年前了，真快，时间久得若不是一场梦，这样一段记忆恐只能掩盖在脑海深处的泥沙中了。那是初一，你我坐在前后位，我还记得那时的你英语很好，我常常向你请教英语，也许是青春期的悸动，那时的我已被你深深的吸引。十年前没有现在的互联网发达，我只能常打电话给你，只为了在家也能听到你的声音，最终在不知道多少次打电话之后，在一次电话中，我向你表了白，现在想起，竟也仍会有些替那时的自己害羞。</p>
-<p>&emsp;&emsp;后来，后来的事我竟然已没法按顺序想起！从回忆中捡起这些记忆的碎片，我竟也无法将他们按时间的轨迹排列，只看到，我在各种节日送了你多次礼物，和你在一起逛街玩，你送我的一双手套，还有年少的我总是为了你吃醋，啊！对！模糊的记忆告诉我，似乎是年少可笑的吃醋让我们的关系慢慢疏远。这一疏远就是十年没联系，曾记得中间有次同学聚会，看到了你，我也未和你说话，但我记得，那天我一直在趁没人注意的机会看你。</p>
-<p>&emsp;&emsp;距上次同学聚会见面，一晃又是多年，可笑的是，若不是一场梦，又怎会再想起你。年少的情窦初开，一段似乎美好的记忆竟这样破碎不堪，再逐一拾起时，却被微微地刺痛。</p>
-<p>&emsp;&emsp;起身，从漩涡中挣扎出来，看窗外雨似乎又大了起来，摇摇头，是谁想在这雨季述其忧伤，倾其回忆？风雨零落，韶光已逝，还有未来的年华。</p>
-
+        <p>在学习SpringAOP之前，首先需要先对Java的静态代理和动态代理进行了解</p>
+<h2 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h2><p>所谓静态代理，就是让代理对象和目标对象实现共同的接口，并且代理对象中包含目标对象的引用</p>
+<p>可以通过一个例子来理解静态代理，首先我们定义抽象的动物接口<code>IAnimal</code> :</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IAnimal</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">say</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着定义一个目标对象的类<code>Dog</code>，实现了<code>IAnimal</code>接口： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">implements</span> <span class="title">IAnimal</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"汪汪汪"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line">然后定义代理对象的类`ProxyDog`，在代理对象中定义目标的引用：  </span><br><span class="line">```java</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyDog</span> <span class="keyword">implements</span> <span class="title">IAnimal</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> IAnimal dog;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ProxyDog</span><span class="params">(IAnimal dog)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        <span class="keyword">this</span>.dog = dog;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        dog.say();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line">最后看下该怎么使用代理对象：  </span><br><span class="line">```java</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StaticTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        IAnimal proxyDog = <span class="keyword">new</span> ProxyDog(<span class="keyword">new</span> Dog());</span><br><span class="line">        proxyDog.say();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，静态代理本质上是在代理对象内部持有目标对象的引用，由于和目标对象实现了一样的接口，所以调用方法一样，在同样的调用方法里去调用目标对象的该方法，从而达到代理的目的。</p>
+<h2 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h2><p>动态代理通过实现<code>java.lang.reflect.InvocationHandler</code>接口，将目标对象引入进来，然后利用反射机制执行目标对象的方法。</p>
+<p>还是上面的<code>IAnimal</code>接口，新写一个<code>Cat</code>实现类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">implements</span> <span class="title">IAnimal</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"喵喵喵"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后定义个实现了<code>InvocationHandler</code>的代理类<code>DynamicCat</code>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicCat</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> IAnimal cat;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IAnimal <span class="title">builder</span><span class="params">(IAnimal cat)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.cat = cat;</span><br><span class="line">        <span class="keyword">return</span> (IAnimal) Proxy.newProxyInstance(cat.getClass().getClassLoader(),</span><br><span class="line">                <span class="keyword">this</span>.cat.getClass().getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> method.invoke(<span class="keyword">this</span>.cat, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过<code>#builder()</code>方法将目标对象引入，并通过<code>Proxy.newProxyInstance</code>创建代理对象，当调用方法时，本质上调用invoke方法，执行目标对象的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        IAnimal proxyCat = <span class="keyword">new</span> DynamicCat().builder(<span class="keyword">new</span> Cat());</span><br><span class="line">        proxyCat.say();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -445,7 +458,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/随笔/" rel="tag"># 随笔</a>
+            <a href="/tags/Java/" rel="tag"># Java</a>
           
         </div>
       
@@ -458,8 +471,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/spring-security-oauth2-authrize-confirm.html" rel="next" title="Spring Security Oauth2：自定义手动授权页">
-                <i class="fa fa-chevron-left"></i> Spring Security Oauth2：自定义手动授权页
+              <a href="/vue-router-history-springboot.html" rel="next" title="Vue router history模式在SpringBoot应用中的配置">
+                <i class="fa fa-chevron-left"></i> Vue router history模式在SpringBoot应用中的配置
               </a>
             
           </div>
@@ -468,8 +481,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/spring-boot-annotation-async.html" rel="prev" title="SpringBoot：@Async注解详解">
-                SpringBoot：@Async注解详解 <i class="fa fa-chevron-right"></i>
+              <a href="/vue-self-definition-dynamic-form.html" rel="prev" title="基于iview的自定义动态表单组件">
+                基于iview的自定义动态表单组件 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -565,8 +578,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -642,6 +664,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态代理"><span class="nav-number">1.</span> <span class="nav-text">静态代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态代理"><span class="nav-number">2.</span> <span class="nav-text">动态代理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
