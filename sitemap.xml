@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.wetsion.site/vue-self-drawer-component.html</loc>
+    
+    <lastmod>2019-06-21T14:44:59.350Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.wetsion.site/links/index.html</loc>
     
     <lastmod>2019-06-20T14:53:48.920Z</lastmod>
@@ -30,14 +37,14 @@
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/spring-boot-annotation-async.html</loc>
+    <loc>https://www.wetsion.site/spring-security-oauth2-authrize-confirm.html</loc>
     
     <lastmod>2019-06-20T13:15:14.710Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/spring-security-oauth2-authrize-confirm.html</loc>
+    <loc>https://www.wetsion.site/spring-boot-annotation-async.html</loc>
     
     <lastmod>2019-06-20T13:15:14.710Z</lastmod>
     
