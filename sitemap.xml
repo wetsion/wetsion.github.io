@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.wetsion.site/mybatis-mapper-register-autowire.html</loc>
+    
+    <lastmod>2019-06-27T15:38:23.121Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wetsion.site/about/index.html</loc>
+    
+    <lastmod>2019-06-25T13:41:46.081Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.wetsion.site/spring-boot-enableautoconfiguration.html</loc>
     
     <lastmod>2019-06-24T15:14:27.740Z</lastmod>
@@ -30,13 +44,6 @@
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/about/index.html</loc>
-    
-    <lastmod>2019-06-20T14:51:32.089Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://www.wetsion.site/categories/index.html</loc>
     
     <lastmod>2019-06-20T14:49:36.548Z</lastmod>
@@ -44,14 +51,14 @@
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/spring-security-oauth2-authrize-confirm.html</loc>
+    <loc>https://www.wetsion.site/spring-boot-annotation-async.html</loc>
     
     <lastmod>2019-06-20T13:15:14.710Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/spring-boot-annotation-async.html</loc>
+    <loc>https://www.wetsion.site/spring-security-oauth2-authrize-confirm.html</loc>
     
     <lastmod>2019-06-20T13:15:14.710Z</lastmod>
     
@@ -79,14 +86,14 @@
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/java-static-dynamic-proxy.html</loc>
+    <loc>https://www.wetsion.site/eureka-security-unknowserver.html</loc>
     
     <lastmod>2019-02-13T14:34:04.033Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/eureka-security-unknowserver.html</loc>
+    <loc>https://www.wetsion.site/java-static-dynamic-proxy.html</loc>
     
     <lastmod>2019-02-13T14:34:04.033Z</lastmod>
     
