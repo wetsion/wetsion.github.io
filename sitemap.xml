@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.wetsion.site/mybatis-first-cache.html</loc>
+    
+    <lastmod>2019-06-27T15:54:54.052Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.wetsion.site/mybatis-mapper-register-autowire.html</loc>
     
     <lastmod>2019-06-27T15:38:23.121Z</lastmod>
@@ -86,14 +93,14 @@
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/eureka-security-unknowserver.html</loc>
+    <loc>https://www.wetsion.site/java-static-dynamic-proxy.html</loc>
     
     <lastmod>2019-02-13T14:34:04.033Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/java-static-dynamic-proxy.html</loc>
+    <loc>https://www.wetsion.site/eureka-security-unknowserver.html</loc>
     
     <lastmod>2019-02-13T14:34:04.033Z</lastmod>
     
