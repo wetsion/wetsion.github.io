@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.wetsion.site/mybatis-mapper-transaction.html</loc>
+    <lastmod>2019-07-09</lastmod>
+  </url>  <url>
     <loc>https://www.wetsion.site/spring-boot-actuator-update-log-level.html</loc>
     <lastmod>2019-07-01</lastmod>
   </url>  <url>
@@ -34,10 +37,10 @@
     <loc>https://www.wetsion.site/vue-self-definition-dynamic-form.html</loc>
     <lastmod>2019-06-18</lastmod>
   </url>  <url>
-    <loc>https://www.wetsion.site/eureka-security-unknowserver.html</loc>
+    <loc>https://www.wetsion.site/java-static-dynamic-proxy.html</loc>
     <lastmod>2019-02-13</lastmod>
   </url>  <url>
-    <loc>https://www.wetsion.site/java-static-dynamic-proxy.html</loc>
+    <loc>https://www.wetsion.site/eureka-security-unknowserver.html</loc>
     <lastmod>2019-02-13</lastmod>
   </url>  <url>
     <loc>https://www.wetsion.site/vue-getclient-ip.html</loc>
