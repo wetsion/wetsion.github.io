@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.wetsion.site/java-source-concurrent-aqs2.html</loc>
+    
+    <lastmod>2019-07-22T15:53:49.310Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.wetsion.site/life-2019-birthday.html</loc>
     
     <lastmod>2019-07-16T15:22:27.439Z</lastmod>
@@ -128,13 +135,6 @@
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/java-static-dynamic-proxy.html</loc>
-    
-    <lastmod>2019-02-13T14:34:04.033Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://www.wetsion.site/eureka-security-unknowserver.html</loc>
     
     <lastmod>2019-02-13T14:34:04.033Z</lastmod>
@@ -142,14 +142,21 @@
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/vue-getclient-ip.html</loc>
+    <loc>https://www.wetsion.site/java-static-dynamic-proxy.html</loc>
+    
+    <lastmod>2019-02-13T14:34:04.033Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wetsion.site/vue-router-tomcat-config.html</loc>
     
     <lastmod>2019-02-13T14:34:04.032Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wetsion.site/vue-router-tomcat-config.html</loc>
+    <loc>https://www.wetsion.site/vue-getclient-ip.html</loc>
     
     <lastmod>2019-02-13T14:34:04.032Z</lastmod>
     
