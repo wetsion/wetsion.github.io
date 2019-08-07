@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.wetsion.site/life-2019-birthday.html</loc>
+    <lastmod>2019-08-07</lastmod>
+  </url>  <url>
+    <loc>https://www.wetsion.site/life-2019-qixi.html</loc>
+    <lastmod>2019-08-07</lastmod>
+  </url>  <url>
     <loc>https://www.wetsion.site/java-source-concurrent-reentrantlock.html</loc>
     <lastmod>2019-08-07</lastmod>
   </url>  <url>
@@ -9,9 +15,6 @@
   </url>  <url>
     <loc>https://www.wetsion.site/java-source-concurrent-aqs2.html</loc>
     <lastmod>2019-07-22</lastmod>
-  </url>  <url>
-    <loc>https://www.wetsion.site/life-2019-birthday.html</loc>
-    <lastmod>2019-07-16</lastmod>
   </url>  <url>
     <loc>https://www.wetsion.site/java-source-concurrent-aqs.html</loc>
     <lastmod>2019-07-15</lastmod>
