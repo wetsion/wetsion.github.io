@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[2019年七夕]]></title>
-    <url>%2Flife-2019-qixi.html</url>
-    <content type="text"><![CDATA[又是一年七夕，不知道啥时候能脱单哦，唉。 又想找个女朋友，又害怕找个女朋友，觉得自己现在没啥能力，而现在不再是校园，进入社会女生都冲着结婚去的，自己又能给别人什么呢，没房没车的，唉，努力吧！]]></content>
+    <title><![CDATA[Java源码学习：Semaphore学习]]></title>
+    <url>%2Fjava-source-concurrent-semaphore.html</url>
+    <content type="text"><![CDATA[前面在学习了AQS之后又学习了下ReentrantLock，接下来再来看下Semaphore。 Semaphore就是信号量，通常用于限制线程数，控制同时访问资源的线程数量。也是基于AQS来实现的，和ReentrantLock类似，也分公平锁和非公平锁，默认也是使用非公平锁。 先通过一个买票的例子来练习下，设定有两个卖票窗口，有十个人要买票，可以使用Semaphore来实现： 1234567891011121314151617181920212223242526272829303132333435public class SemaphoreDemo &#123; static class SemphoreRunner implements Runnable&#123; private Semaphore semaphore; private int user; public SemphoreRunner(Semaphore semaphore, int user)&#123; this.semaphore = semaphore; this.user = user; &#125; @Override public void run() &#123; try &#123; semaphore.acquire(); System.out.println("用户：" + user + "进入窗口，准备买票"); Thread.sleep((long) (Math.random() * 3000)); System.out.println("用户：" + user + "买好票，准备离开"); Thread.sleep((long) (Math.random() * 3000)); System.out.println("用户：" + user + "已经离开"); &#125; catch (InterruptedException e) &#123; e.printStackTrace(); &#125; finally &#123; semaphore.release(); &#125; &#125; &#125; public static void main(String[] args) &#123; Semaphore semaphore = new Semaphore(2); ExecutorService service = Executors.newCachedThreadPool(); for (int i = 0; i &lt; 10; i++)&#123; service.execute(new SemphoreRunner(semaphore, i+1)); &#125; service.shutdown(); &#125;&#125; 运行结果： 123456789101112131415161718192021222324252627282930用户：1进入窗口，准备买票用户：2进入窗口，准备买票用户：1买好票，准备离开用户：1已经离开用户：3进入窗口，准备买票用户：2买好票，准备离开用户：3买好票，准备离开用户：3已经离开用户：4进入窗口，准备买票用户：2已经离开用户：5进入窗口，准备买票用户：4买好票，准备离开用户：4已经离开用户：6进入窗口，准备买票用户：5买好票，准备离开用户：5已经离开用户：7进入窗口，准备买票用户：6买好票，准备离开用户：6已经离开用户：8进入窗口，准备买票用户：7买好票，准备离开用户：8买好票，准备离开用户：8已经离开用户：9进入窗口，准备买票用户：7已经离开用户：10进入窗口，准备买票用户：9买好票，准备离开用户：9已经离开用户：10买好票，准备离开用户：10已经离开 使用Semaphore，必须先调用acquire()获取锁（或者说是许可，这里我还是称呼其为锁，只不过Semaphore维护了多把锁），先看下acquire()源码： acquire()1234567891011public void acquire() throws InterruptedException &#123; sync.acquireSharedInterruptibly(1);&#125;// AQS :public final void acquireSharedInterruptibly(int arg) throws InterruptedException &#123; if (Thread.interrupted()) throw new InterruptedException(); if (tryAcquireShared(arg) &lt; 0) doAcquireSharedInterruptibly(arg);&#125; 这里sync是内部类Sync对象，是AQS在Semaphore的抽象实现，这里Sync和ReentrantLock中的Sync类似，也有两个子类实现，即公平与非公平两个版本，这里调用sync.acquireSharedInterruptibly(1)实际上是调用AQS的acquireSharedInterruptibly()方法，从前面学习已经知道，acquireSharedInterruptibly()是在共享模式下的获取锁（会被线程中断打断），先调用AQS子类实现的tryAcquireShared()来尝试获取锁，这里就是调用Semaphore中Sync的tryAcquireShared()，分为了公平和非公平两个实现版本，先看下默认的非公平实现： 非公平的tryAcquireShared()12345678910111213protected int tryAcquireShared(int acquires) &#123; return nonfairTryAcquireShared(acquires);&#125;// Sync#nonfairTryAcquireShared()final int nonfairTryAcquireShared(int acquires) &#123; for (;;) &#123; int available = getState(); int remaining = available - acquires; if (remaining &lt; 0 || compareAndSetState(available, remaining)) return remaining; &#125;&#125; 在非公平的实现中，调用Sync默认提供了的nonfairTryAcquireShared()方法，在nonfairTryAcquireShared()中先获取AQS中的同步状态state（这里state的是在Semaphore对象new的时候通过Sync调用AQS的setState设置的），也就是可用的锁的个数，拿state减去要获取的锁个数（默认为1），如果小于0，说明目前没有剩余可用锁，则直接返回负值；如果大于0，则再通过CAS修改state的值，修改为减之后的值，如果成功，则返回剩余锁个数（即获取锁成功了），如果失败则继续循环。 再看下公平的实现： 公平的tryAcquireShared()1234567891011protected int tryAcquireShared(int acquires) &#123; for (;;) &#123; if (hasQueuedPredecessors()) return -1; int available = getState(); int remaining = available - acquires; if (remaining &lt; 0 || compareAndSetState(available, remaining)) return remaining; &#125;&#125; 这里也是自旋，先通过hasQueuedPredecessors()判断当前线程之前是否存在排队线程，如果有排队等待的线程，则不参与获取锁的竞争，返回-1；如果没有，则同样获取当前同步状态state，即可用锁个数，减去要获取的锁个数，如果小于0，即目前无剩余可用锁，直接返回负值；如果大于0，和非公平实现一样，通过CAS修改state，如果成功，返回剩余锁个数（为正数），失败则继续自旋循环。 接上文，在AQS的acquireSharedInterruptibly()中，如果tryAcquireShared()大于0，即获取锁成功，如果为负值，即获取锁失败，调用doAcquireSharedInterruptibly()方法，这里在前文AQS的学习中已知晓，将当前线程插入到等待队列队尾排队等待唤醒，不再赘述。 对于acquire()获取锁的操作，Semaphore的公平和非公平实现又体现在哪，有什么区别呢，通过通读源码，不难发现，公平的实现比非公平的实现多了两行代码，即if (hasQueuedPredecessors()) return -1;，公平的实现会先判断在等待队列里是否有线程在排队等待，而非公平的实现则直接参与竞争锁。 release()Semaphore的release()方法直接调用AQS的releaseShared()： 1234567public final boolean releaseShared(int arg) &#123; if (tryReleaseShared(arg)) &#123; doReleaseShared(); return true; &#125; return false;&#125; 再调用Semaphore中Sync的tryReleaseShared()实现，这里非公平和公平都共用该方法释放锁： 12345678910protected final boolean tryReleaseShared(int releases) &#123; for (;;) &#123; int current = getState(); int next = current + releases; if (next &lt; current) // overflow throw new Error("Maximum permit count exceeded"); if (compareAndSetState(current, next)) return true; &#125;&#125; 这里实现也比较简单，即计算释放锁之后可用锁的数量，然后CAS操作将state更新成新的值，成功后，在调用AQS的doReleaseShared()唤醒后续等待的线程，不再赘述。 Semaphore作为信号量，可以使用在竞争资源有限的场景，但讲道理，实际开发中，却是没用到过 -.-||]]></content>
       <categories>
-        <category>生活随笔</category>
+        <category>后端</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>随笔</tag>
+        <tag>Java</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -22,6 +24,17 @@
       <tags>
         <tag>Java</tag>
         <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[2019年七夕]]></title>
+    <url>%2Flife-2019-qixi.html</url>
+    <content type="text"><![CDATA[又是一年七夕，不知道啥时候能脱单哦，唉。 又想找个女朋友，又害怕找个女朋友，觉得自己现在没啥能力，而现在不再是校园，进入社会女生都冲着结婚去的，自己又能给别人什么呢，没房没车的，唉，努力吧！]]></content>
+      <categories>
+        <category>生活随笔</category>
+      </categories>
+      <tags>
+        <tag>随笔</tag>
       </tags>
   </entry>
   <entry>
