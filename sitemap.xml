@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.wetsion.site/links/index.html</loc>
+    
+    <lastmod>2019-10-25T17:51:41.231Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.wetsion.site/spring-config-center-auto-update.html</loc>
     
     <lastmod>2019-10-25T17:37:27.349Z</lastmod>
@@ -152,13 +159,6 @@
     <loc>https://www.wetsion.site/vue-self-drawer-component.html</loc>
     
     <lastmod>2019-06-21T14:44:59.350Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.wetsion.site/links/index.html</loc>
-    
-    <lastmod>2019-06-20T14:53:48.920Z</lastmod>
     
   </url>
   
