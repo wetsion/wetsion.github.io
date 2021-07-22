@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Mybatis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Mybatis源码学习：mapper的注册与注入">
+<meta name="keywords" content="Java,Mybatis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis源码学习：mapper的注册与注入">
+<meta property="og:url" content="https://www.wetsion.site/mybatis-mapper-register-autowire.html">
+<meta property="og:site_name" content="秋月的博客">
+<meta property="og:description" content="Mybatis源码学习：mapper的注册与注入">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-27T15:38:23.121Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mybatis源码学习：mapper的注册与注入">
+<meta name="twitter:description" content="Mybatis源码学习：mapper的注册与注入">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.wetsion.site/mybatis-mapper-register-autowire.html">
+
+
+
+
+
+  <title>Mybatis源码学习：mapper的注册与注入 | 秋月的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?157fdaff31a179bb4aedd99ddf1a8c32";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋月的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            友情链接
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wetsion.site/mybatis-mapper-register-autowire.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="秋月">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋月的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Mybatis源码学习：mapper的注册与注入</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-26T00:00:00+08:00">
+                2019-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/Mybatis/" itemprop="url" rel="index">
+                    <span itemprop="name">Mybatis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/mybatis-mapper-register-autowire.html" class="leancloud_visitors" data-flag-title="Mybatis源码学习：mapper的注册与注入">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Mybatis源码学习：mapper的注册与注入
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>一直在使用mybatis，对它的源码断断续续地看过一点，知之甚少，所以打算把mybatis源码坚持看一遍，并记录成一系列学习笔记，以免后面忘了，可以看着再回忆回忆。</p>
+</blockquote>
+<p>先从最常用的点入手，在使用的时候，通过都是定义一个mapper接口，例如这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FoodMapper</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Select</span>(<span class="string">"select * from food where id=#&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function">Food <span class="title">getById</span><span class="params">(@Param(<span class="string">"id"</span>)</span> Long id)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在启动类上加上mapper扫描路径：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@MapperScan</span>(basePackages = <span class="string">"site.wetsion.mybatislearning.mapper"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MybatisLearningApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(MybatisLearningApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后再在用到的地方注入使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FoodController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    FoodMapper foodMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/mybatis/test1"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Food food = foodMapper.getById(<span class="number">7L</span>);</span><br><span class="line">        log.info(JSON.toJSONString(food));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样一波操作看起来很简单，但都是mybatis和spring帮我做了很多事，所以先从这里入手，通过学习源码了解下是怎么样做到将mapper接口注册成bean，并再注入使用的。</p>
+<p>首先，可以明确的一点是，是我通过使用<code>@MapperScan</code>注解告诉了spring，mapper接口的所在位置，所以先看该注解的源码（以下源码版本为jdk1.8，mybatis-spring-boot-starter  2.0.1）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Import</span>(MapperScannerRegistrar.class)</span><br><span class="line"><span class="meta">@Repeatable</span>(MapperScans.class)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MapperScan &#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 省略注解的属性</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个注解通过Import引入了<code>MapperScannerRegistrar</code>，顾名思义，我先猜测它就是mapper的注册器，同时看到注解的注释有这样一句话：<code>It performs when same work as {@link MapperScannerConfigurer} via {@link MapperScannerRegistrar}.</code>，意思就是<code>MapperScannerRegistrar</code>和<code>MapperScannerConfigurer</code>做的是同样的工作，而<code>MapperScannerConfigurer</code>是干嘛的呢，使用xml配置时，通常这样指定mapper包路径，将mapper注册成bean：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.mapper.MapperScannerConfigurer"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"basePackage"</span> <span class="attr">value</span>=<span class="string">"site.wetsion.mybatislearning.mapper"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"sqlSessionFactoryBeanName"</span> <span class="attr">value</span>=<span class="string">"sqlSessionFactory"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>所以点开<code>MapperScannerRegistrar</code>，看它如何实现的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MapperScannerRegistrar</span> <span class="keyword">implements</span> <span class="title">ImportBeanDefinitionRegistrar</span>, <span class="title">ResourceLoaderAware</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerBeanDefinitions</span><span class="params">(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry)</span> </span>&#123;</span><br><span class="line">    AnnotationAttributes mapperScanAttrs = AnnotationAttributes</span><br><span class="line">        .fromMap(importingClassMetadata.getAnnotationAttributes(MapperScan.class.getName()));</span><br><span class="line">    <span class="keyword">if</span> (mapperScanAttrs != <span class="keyword">null</span>) &#123;</span><br><span class="line">      registerBeanDefinitions(mapperScanAttrs, registry);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过import引入<code>MapperScannerRegistrar</code>之后，执行完aware接口的操作之后，将会调用上述核心的<code>registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry)</code>，可以看到，在该方法中，先获取<code>@MapperScan</code>注解的属性，不为空，将会调用私有的registerBeanDefinitions()方法，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">registerBeanDefinitions</span><span class="params">(AnnotationAttributes annoAttrs, BeanDefinitionRegistry registry)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    ClassPathMapperScanner scanner = <span class="keyword">new</span> ClassPathMapperScanner(registry);</span><br><span class="line">    Optional.ofNullable(resourceLoader).ifPresent(scanner::setResourceLoader);</span><br><span class="line"></span><br><span class="line">    Class&lt;? extends Annotation&gt; annotationClass = annoAttrs.getClass(<span class="string">"annotationClass"</span>);</span><br><span class="line">    <span class="keyword">if</span> (!Annotation.class.equals(annotationClass)) &#123;</span><br><span class="line">      scanner.setAnnotationClass(annotationClass);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Class&lt;?&gt; markerInterface = annoAttrs.getClass(<span class="string">"markerInterface"</span>);</span><br><span class="line">    <span class="keyword">if</span> (!Class.class.equals(markerInterface)) &#123;</span><br><span class="line">      scanner.setMarkerInterface(markerInterface);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Class&lt;? extends BeanNameGenerator&gt; generatorClass = annoAttrs.getClass(<span class="string">"nameGenerator"</span>);</span><br><span class="line">    <span class="keyword">if</span> (!BeanNameGenerator.class.equals(generatorClass)) &#123;</span><br><span class="line">      scanner.setBeanNameGenerator(BeanUtils.instantiateClass(generatorClass));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Class&lt;? extends MapperFactoryBean&gt; mapperFactoryBeanClass = annoAttrs.getClass(<span class="string">"factoryBean"</span>);</span><br><span class="line">    <span class="keyword">if</span> (!MapperFactoryBean.class.equals(mapperFactoryBeanClass)) &#123;</span><br><span class="line">      scanner.setMapperFactoryBeanClass(mapperFactoryBeanClass);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    scanner.setSqlSessionTemplateBeanName(annoAttrs.getString(<span class="string">"sqlSessionTemplateRef"</span>));</span><br><span class="line">    scanner.setSqlSessionFactoryBeanName(annoAttrs.getString(<span class="string">"sqlSessionFactoryRef"</span>));</span><br><span class="line"></span><br><span class="line">    List&lt;String&gt; basePackages = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    basePackages.addAll(</span><br><span class="line">        Arrays.stream(annoAttrs.getStringArray(<span class="string">"value"</span>))</span><br><span class="line">            .filter(StringUtils::hasText)</span><br><span class="line">            .collect(Collectors.toList()));</span><br><span class="line"></span><br><span class="line">    basePackages.addAll(</span><br><span class="line">        Arrays.stream(annoAttrs.getStringArray(<span class="string">"basePackages"</span>))</span><br><span class="line">            .filter(StringUtils::hasText)</span><br><span class="line">            .collect(Collectors.toList()));</span><br><span class="line"></span><br><span class="line">    basePackages.addAll(</span><br><span class="line">        Arrays.stream(annoAttrs.getClassArray(<span class="string">"basePackageClasses"</span>))</span><br><span class="line">            .map(ClassUtils::getPackageName)</span><br><span class="line">            .collect(Collectors.toList()));</span><br><span class="line"></span><br><span class="line">    scanner.registerFilters();</span><br><span class="line">    scanner.doScan(StringUtils.toStringArray(basePackages));</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>这里定义了<code>ClassPathMapperScanner</code>对象scanner，然后获取注解属性，并将属性设置到scanner中，最后调用doScan开始扫描指定的包路径：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Set&lt;BeanDefinitionHolder&gt; <span class="title">doScan</span><span class="params">(String... basePackages)</span> </span>&#123;</span><br><span class="line">    Set&lt;BeanDefinitionHolder&gt; beanDefinitions = <span class="keyword">super</span>.doScan(basePackages);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (beanDefinitions.isEmpty()) &#123;</span><br><span class="line">      LOGGER.warn(() -&gt; <span class="string">"No MyBatis mapper was found in '"</span> + Arrays.toString(basePackages) + <span class="string">"' package. Please check your configuration."</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      processBeanDefinitions(beanDefinitions);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> beanDefinitions;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>先调用父类也就是<code>ClassPathBeanDefinitionScanner</code>的doScan方法，将指定包下的mapper接口转换成一个个bean定义持有者（BeanDefinitionHolder，拥有名称别名和bean定义，用于后续bean注册），并调用<code>BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry)</code>注册bean定义，再将beanDefinitionHolder返回。如果不为空，将调用processBeanDefinitions对这些beanDefinitionHolder处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processBeanDefinitions</span><span class="params">(Set&lt;BeanDefinitionHolder&gt; beanDefinitions)</span> </span>&#123;</span><br><span class="line">    GenericBeanDefinition definition;</span><br><span class="line">    <span class="keyword">for</span> (BeanDefinitionHolder holder : beanDefinitions) &#123;</span><br><span class="line">      definition = (GenericBeanDefinition) holder.getBeanDefinition();</span><br><span class="line">      String beanClassName = definition.getBeanClassName();</span><br><span class="line">      LOGGER.debug(() -&gt; <span class="string">"Creating MapperFactoryBean with name '"</span> + holder.getBeanName()</span><br><span class="line">          + <span class="string">"' and '"</span> + beanClassName + <span class="string">"' mapperInterface"</span>);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// mapper接口是bean的原始类，但bean的实际类是MapperFactoryBean</span></span><br><span class="line">      definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName); <span class="comment">// issue #59</span></span><br><span class="line">      definition.setBeanClass(<span class="keyword">this</span>.mapperFactoryBeanClass);</span><br><span class="line"></span><br><span class="line">      definition.getPropertyValues().add(<span class="string">"addToConfig"</span>, <span class="keyword">this</span>.addToConfig);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">boolean</span> explicitFactoryUsed = <span class="keyword">false</span>;</span><br><span class="line">      <span class="keyword">if</span> (StringUtils.hasText(<span class="keyword">this</span>.sqlSessionFactoryBeanName)) &#123;</span><br><span class="line">        definition.getPropertyValues().add(<span class="string">"sqlSessionFactory"</span>, <span class="keyword">new</span> RuntimeBeanReference(<span class="keyword">this</span>.sqlSessionFactoryBeanName));</span><br><span class="line">        explicitFactoryUsed = <span class="keyword">true</span>;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.sqlSessionFactory != <span class="keyword">null</span>) &#123;</span><br><span class="line">        definition.getPropertyValues().add(<span class="string">"sqlSessionFactory"</span>, <span class="keyword">this</span>.sqlSessionFactory);</span><br><span class="line">        explicitFactoryUsed = <span class="keyword">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (StringUtils.hasText(<span class="keyword">this</span>.sqlSessionTemplateBeanName)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (explicitFactoryUsed) &#123;</span><br><span class="line">          LOGGER.warn(() -&gt; <span class="string">"Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        definition.getPropertyValues().add(<span class="string">"sqlSessionTemplate"</span>, <span class="keyword">new</span> RuntimeBeanReference(<span class="keyword">this</span>.sqlSessionTemplateBeanName));</span><br><span class="line">        explicitFactoryUsed = <span class="keyword">true</span>;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.sqlSessionTemplate != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (explicitFactoryUsed) &#123;</span><br><span class="line">          LOGGER.warn(() -&gt; <span class="string">"Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        definition.getPropertyValues().add(<span class="string">"sqlSessionTemplate"</span>, <span class="keyword">this</span>.sqlSessionTemplate);</span><br><span class="line">        explicitFactoryUsed = <span class="keyword">true</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (!explicitFactoryUsed) &#123;</span><br><span class="line">        LOGGER.debug(() -&gt; <span class="string">"Enabling autowire by type for MapperFactoryBean with name '"</span> + holder.getBeanName() + <span class="string">"'."</span>);</span><br><span class="line">        definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>这里对beanDefinition进行一系列改造，包括<b>将beanClass设置为<code>MapperFactoryBean</code></b>，此时，mapper接口是bean的原始类，但bean的实际类是MapperFactoryBean，这里将在后面注入mapper时体现。</p>
+<p>这样，所有的mapper就注册进了Spring容器，上面说的是通过<code>@MapperScan</code>注解指定mapper的包路径的方式，通常我们也会使用另一种方式，即不在启动类使用<code>@MapperScan</code>注解，而是在每一个mapper接口上使用<code>@Mapper</code>注解来声明这是一个mapper，然而对于这种方式，是怎样注册成bean的呢。</p>
+<p>可以在<code>MybatisAutoConfiguration</code>类中发现一个内部静态类<code>AutoConfiguredMapperScannerRegistrar</code>，这个类在另一个内部静态类，同时也声明为配置类的<code>MapperScannerRegistrarNotFoundConfiguration</code>引入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@org</span>.springframework.context.annotation.Configuration</span><br><span class="line">  <span class="meta">@Import</span>(&#123; AutoConfiguredMapperScannerRegistrar.class &#125;)</span><br><span class="line">  <span class="meta">@ConditionalOnMissingBean</span>(MapperFactoryBean.class)</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MapperScannerRegistrarNotFoundConfiguration</span> <span class="keyword">implements</span> <span class="title">InitializingBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      logger.debug(<span class="string">"No &#123;&#125; found."</span>, MapperFactoryBean.class.getName());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>而<code>AutoConfiguredMapperScannerRegistrar</code>所做的和前文的<code>MapperScannerRegistrar</code>做的是类似的事：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AutoConfiguredMapperScannerRegistrar</span></span></span><br><span class="line"><span class="class">      <span class="keyword">implements</span> <span class="title">BeanFactoryAware</span>, <span class="title">ImportBeanDefinitionRegistrar</span>, <span class="title">ResourceLoaderAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerBeanDefinitions</span><span class="params">(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (!AutoConfigurationPackages.has(<span class="keyword">this</span>.beanFactory)) &#123;</span><br><span class="line">        logger.debug(<span class="string">"Could not determine auto-configuration package, automatic mapper scanning disabled."</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      logger.debug(<span class="string">"Searching for mappers annotated with @Mapper"</span>);</span><br><span class="line"></span><br><span class="line">      List&lt;String&gt; packages = AutoConfigurationPackages.get(<span class="keyword">this</span>.beanFactory);</span><br><span class="line">      <span class="keyword">if</span> (logger.isDebugEnabled()) &#123;</span><br><span class="line">        packages.forEach(pkg -&gt; logger.debug(<span class="string">"Using auto-configuration base package '&#123;&#125;'"</span>, pkg));</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      ClassPathMapperScanner scanner = <span class="keyword">new</span> ClassPathMapperScanner(registry);</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.resourceLoader != <span class="keyword">null</span>) &#123;</span><br><span class="line">        scanner.setResourceLoader(<span class="keyword">this</span>.resourceLoader);</span><br><span class="line">      &#125;</span><br><span class="line">      scanner.setAnnotationClass(Mapper.class);</span><br><span class="line">      scanner.registerFilters();</span><br><span class="line">      scanner.doScan(StringUtils.toStringArray(packages));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>即对根目录路径下所有类进行扫描，将有<code>@Mapper</code>注解修饰的接口注册成bean。</p>
+<p>以上就是mapper接口注册到Spring容器的分析，下面再探索下当我们使用@Autowired尝试注入时，都做了什么事。</p>
+<p>上文已经说了，在扫描注册beanDefinition之后，有一步将bean的class改成了MapperFactoryBean，而<code>MapperFactoryBean</code>实现了<code>FactoryBean</code>接口，实现此接口的bean不能用作普通的bean，它是对象的工厂，不能直接作为bean的实例，Spring在处理这类bean时，会调用<code>getObject()</code>获取bean对象。</p>
+<p>同时<code>MapperFactoryBean</code>继承自<code>SqlSessionDaoSupport</code>，而<code>SqlSessionDaoSupport</code>继承<code>DaoSupport</code>，</p>
+<blockquote>
+<p><code>DaoSupport</code>定义了初始化的方法，<code>SqlSessionDaoSupport</code>定义了设置数据访问的方式，如setSqlSessionTemplate、setSqlSessionFactory（这两个方法本质上都是为了给属性<code>SqlSessionTemplate sqlSessionTemplate</code>赋值），所以<code>MapperFactoryBean</code>在创建对象时需要设置这两个值其中一个，如果都设置了，setSqlSessionFactory中逻辑将会被覆盖。</p>
+</blockquote>
+<p><code>DaoSupport</code>实现了<code>InitializingBean</code>接口，所以在Spring容器通过反射创建<code>MapperFactoryBean</code>实例后，将会调用<code>afterPropertiesSet()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> <span class="keyword">throws</span> IllegalArgumentException, BeanInitializationException </span>&#123;</span><br><span class="line">		checkDaoConfig();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			initDao();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> BeanInitializationException(<span class="string">"Initialization of DAO failed"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>随即调用本类的<code>checkDaoConfig()</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">checkDaoConfig</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.checkDaoConfig();</span><br><span class="line">    notNull(<span class="keyword">this</span>.mapperInterface, <span class="string">"Property 'mapperInterface' is required"</span>);</span><br><span class="line">    Configuration configuration = getSqlSession().getConfiguration();</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.addToConfig &amp;&amp; !configuration.hasMapper(<span class="keyword">this</span>.mapperInterface)) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        configuration.addMapper(<span class="keyword">this</span>.mapperInterface);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        logger.error(<span class="string">"Error while adding the mapper '"</span> + <span class="keyword">this</span>.mapperInterface + <span class="string">"' to configuration."</span>, e);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(e);</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        ErrorContext.instance().reset();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>通过调用<code>Configuration</code>的addMapper调用<code>MapperRegistry.addMapper()</code>，将当前bean的原始类（该mapper接口）包装成<code>MapperProxyFactory</code>对象保存至map缓存起来，如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">addMapper</span><span class="params">(Class&lt;T&gt; type)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (type.isInterface()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (hasMapper(type)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> BindingException(<span class="string">"Type "</span> + type + <span class="string">" is already known to the MapperRegistry."</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">boolean</span> loadCompleted = <span class="keyword">false</span>;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        knownMappers.put(type, <span class="keyword">new</span> MapperProxyFactory&lt;&gt;(type));</span><br><span class="line">        <span class="comment">// It's important that the type is added before the parser is run</span></span><br><span class="line">        <span class="comment">// otherwise the binding may automatically be attempted by the</span></span><br><span class="line">        <span class="comment">// mapper parser. If the type is already known, it won't try.</span></span><br><span class="line">        MapperAnnotationBuilder parser = <span class="keyword">new</span> MapperAnnotationBuilder(config, type);</span><br><span class="line">        parser.parse();</span><br><span class="line">        loadCompleted = <span class="keyword">true</span>;</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!loadCompleted) &#123;</span><br><span class="line">          knownMappers.remove(type);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>上面还有一个地方比较重要：<code>MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);parser.parse();</code> 我再看下parse()这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    String resource = type.toString();</span><br><span class="line">    <span class="keyword">if</span> (!configuration.isResourceLoaded(resource)) &#123;</span><br><span class="line">      loadXmlResource();</span><br><span class="line">      configuration.addLoadedResource(resource);</span><br><span class="line">      assistant.setCurrentNamespace(type.getName());</span><br><span class="line">      parseCache();</span><br><span class="line">      parseCacheRef();</span><br><span class="line">      Method[] methods = type.getMethods();</span><br><span class="line">      <span class="keyword">for</span> (Method method : methods) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          <span class="comment">// issue #237</span></span><br><span class="line">          <span class="keyword">if</span> (!method.isBridge()) &#123;</span><br><span class="line">            parseStatement(method);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IncompleteElementException e) &#123;</span><br><span class="line">          configuration.addIncompleteMethod(<span class="keyword">new</span> MethodResolver(<span class="keyword">this</span>, method));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    parsePendingMethods();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>这里主要是遍历mapper中的方法，将方法解析生成对应的<code>MapperStatement</code>对象，并保存在<code>Configuration</code>的<code>Map&lt;String, MappedStatement&gt; mappedStatements</code>中，具体实现见<code>MapperBuilderAssistant#addMappedStatement()</code>暂且不表。</p>
+<p>衔接上文说的，<code>MapperFactoryBean</code>实例创建之后，在注入时，通过调用<code>getObject()</code>方法获取bean对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> T <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> getSqlSession().getMapper(<span class="keyword">this</span>.mapperInterface);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>这里getSqlSession获取的是<code>SqlSessionTemplate</code>，即<code>SqlSessionTemplate#getMapper()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">getMapper</span><span class="params">(Class&lt;T&gt; type)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> getConfiguration().getMapper(type, <span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>其实就是把上面说的放入MapperRegistry的map缓存中的<code>MapperProxyFactory</code>对象取出来，再创建一个当前mapper接口的代理类对象(<code>MapperProxy</code>)，最后Spring将这个代理类对象注入到引用的地方：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MapperRegistry.java</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">getMapper</span><span class="params">(Class&lt;T&gt; type, SqlSession sqlSession)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> MapperProxyFactory&lt;T&gt; mapperProxyFactory = (MapperProxyFactory&lt;T&gt;) knownMappers.get(type);</span><br><span class="line">    <span class="keyword">if</span> (mapperProxyFactory == <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> BindingException(<span class="string">"Type "</span> + type + <span class="string">" is not known to the MapperRegistry."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> mapperProxyFactory.newInstance(sqlSession);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> BindingException(<span class="string">"Error getting mapper instance. Cause: "</span> + e, e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">// MapperProxyFactory.java</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">newInstance</span><span class="params">(MapperProxy&lt;T&gt; mapperProxy)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), <span class="keyword">new</span> Class[] &#123; mapperInterface &#125;, mapperProxy);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> T <span class="title">newInstance</span><span class="params">(SqlSession sqlSession)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> MapperProxy&lt;T&gt; mapperProxy = <span class="keyword">new</span> MapperProxy&lt;&gt;(sqlSession, mapperInterface, methodCache);</span><br><span class="line">    <span class="keyword">return</span> newInstance(mapperProxy);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>由于实际注入的是<code>MapperProxy</code>对象，所以当我<code>foodMapper.getById(1)</code>这样调用时，实际上调用的是<code>MapperProxy#invoke()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (Object.class.equals(method.getDeclaringClass())) &#123;</span><br><span class="line">        <span class="keyword">return</span> method.invoke(<span class="keyword">this</span>, args);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isDefaultMethod(method)) &#123;</span><br><span class="line">        <span class="keyword">return</span> invokeDefaultMethod(proxy, method, args);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">      <span class="keyword">throw</span> ExceptionUtil.unwrapThrowable(t);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">final</span> MapperMethod mapperMethod = cachedMapperMethod(method);</span><br><span class="line">    <span class="keyword">return</span> mapperMethod.execute(sqlSession, args);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>将mapper的方法封装成<code>MapperMethod</code>对象，调用<code>MapperMethod</code>的execute方法，而在execute本质上是根据操作类型（insert、update、delete、select等）调用<code>SqlSessionTemplate</code>的对应方法，而<code>SqlSessionTemplate</code>通过内部的代理会话<code>sqlSessionProxy</code>进行数据库操作，获取结果。</p>
+<p>到这里，就看完了mapper注册与注入的流程。</p>
+<p>关于mybatis与Spring整合，mapper的注册与注入，就学习到这里，还有一些瑕疵，后续再写笔记进行补充。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/qrcode.jpg" alt="秋月 wechat" style="width: 200px; max-width: 100%;">
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客！</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>随缘打赏，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechatpay.jpeg" alt="秋月 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="秋月 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/spring-boot-enableautoconfiguration.html" rel="next" title="SpringBoot：@EnableAutoConfiguration自动配置原理">
+                <i class="fa fa-chevron-left"></i> SpringBoot：@EnableAutoConfiguration自动配置原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/mybatis-first-cache.html" rel="prev" title="Mybatis源码学习：一级缓存">
+                Mybatis源码学习：一级缓存 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <div class="bdsharebuttonbox">
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+    <a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a>
+    <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+    <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a class="bds_count" data-cmd="count"></a>
+  </div>
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "2",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "share": {
+        "bdSize": "16",
+        "bdStyle": "0"
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zOTk4Mi8xNjUwOQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="秋月">
+            
+              <p class="site-author-name" itemprop="name">秋月</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">秋月</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="/static/api/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1fNQtTsvxkDhgo9Pgdshn2Mi-gzGzoHsz", "Tv5DAh2kf7e9qd3CT0wGNADx");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

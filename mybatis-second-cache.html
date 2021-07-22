@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Mybatis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Mybatis源码学习：二级缓存">
+<meta name="keywords" content="Java,Mybatis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis源码学习：二级缓存">
+<meta property="og:url" content="https://www.wetsion.site/mybatis-second-cache.html">
+<meta property="og:site_name" content="秋月的博客">
+<meta property="og:description" content="Mybatis源码学习：二级缓存">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-01T15:13:19.967Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mybatis源码学习：二级缓存">
+<meta name="twitter:description" content="Mybatis源码学习：二级缓存">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.wetsion.site/mybatis-second-cache.html">
+
+
+
+
+
+  <title>Mybatis源码学习：二级缓存 | 秋月的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?157fdaff31a179bb4aedd99ddf1a8c32";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋月的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            友情链接
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wetsion.site/mybatis-second-cache.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="秋月">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋月的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Mybatis源码学习：二级缓存</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-30T00:00:00+08:00">
+                2019-06-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/Mybatis/" itemprop="url" rel="index">
+                    <span itemprop="name">Mybatis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/mybatis-second-cache.html" class="leancloud_visitors" data-flag-title="Mybatis源码学习：二级缓存">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Mybatis源码学习：二级缓存
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章说到了mybatis的一级缓存，这篇继续学习mybatis的二级缓存。</p>
+<p>二级缓存不同于一级缓存只作用于同一会话中，而是全局的，或者说，对于不同的会话sqlsession，只要是同一个mappedstatement（即相同的mapper同一个方法），就会生效（前提是sqlsession提交之后）。</p>
+<p>打开二级缓存，除了默认打开的<code>mybatis.configuration.cache-enabled</code>属性之外，还需要在需要的mapper接口上使用<code>@CacheNamespace</code>注解（等价于xml配置时在mapper xml文件里加上<code>&lt;cache/&gt;</code>标签）。</p>
+<h3 id="示例实践"><a href="#示例实践" class="headerlink" title="示例实践"></a>示例实践</h3><p>例如以下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="meta">@CacheNamespace</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FoodMapper</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Select</span>(<span class="string">"select * from food where id=#&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function">Food <span class="title">getById</span><span class="params">(@Param(<span class="string">"id"</span>)</span> Long id)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在controller中调用（这里还是和上一篇一级缓存一样用的是通过sessionFactory创建会话，其实也可以直接注入foodMapper调用）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping</span>(<span class="string">"/mybatis/test4"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test4</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        SqlSession session = sqlSessionFactory.openSession();</span><br><span class="line">        SqlSession session2 = sqlSessionFactory.openSession();</span><br><span class="line">        Food food = (Food) session.selectOne(</span><br><span class="line">                <span class="string">"site.wetsion.mybatislearning.mapper.FoodMapper.getById"</span>, <span class="number">1L</span>);</span><br><span class="line">        session.commit();</span><br><span class="line">        log.info(JSON.toJSONString(food));</span><br><span class="line">        Food food2 = (Food) session2.selectOne(</span><br><span class="line">                <span class="string">"site.wetsion.mybatislearning.mapper.FoodMapper.getById"</span>, <span class="number">1L</span>);</span><br><span class="line">        log.info(JSON.toJSONString(food2));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>以上的demo开启了两个会话，共执行了两次查询操作，但只打印了一次sql查询语句，但如果把<code>session.commit()</code>删除，那么将会打印两次sql查询语句，这也是前面说的二级缓存在会话提交之后生效。</p>
+<h3 id="源码学习"><a href="#源码学习" class="headerlink" title="源码学习"></a>源码学习</h3><p>那么还是通过从源码学习下二级缓存的原理，同样的，先从<code>DefaultSqlSession#selectOne()</code>入手，上一篇文章已经知道，<code>DefaultSqlSession</code>实际上先调用的是<code>CachingExecutor</code>的<code>query()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> &lt;E&gt; <span class="function">List&lt;E&gt; <span class="title">query</span><span class="params">(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)</span></span></span><br><span class="line"><span class="function">      <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    Cache cache = ms.getCache();</span><br><span class="line">    <span class="keyword">if</span> (cache != <span class="keyword">null</span>) &#123;</span><br><span class="line">      flushCacheIfRequired(ms);</span><br><span class="line">      <span class="keyword">if</span> (ms.isUseCache() &amp;&amp; resultHandler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        ensureNoOutParams(ms, boundSql);</span><br><span class="line">        <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">        List&lt;E&gt; list = (List&lt;E&gt;) tcm.getObject(cache, key);</span><br><span class="line">        <span class="keyword">if</span> (list == <span class="keyword">null</span>) &#123;</span><br><span class="line">          list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);</span><br><span class="line">          tcm.putObject(cache, key, list); <span class="comment">// issue #578 and #116</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>在上述源码中，<code>Cache cache = ms.getCache()</code>即为获取二级缓存。</p>
+<hr>
+<p><strong><em>那么在mappedStatement中的cache是何时初始化设置与<code>MappedStatement</code>绑定的呢</em></strong></p>
+<p>还是得从mapper bean的创建与注入说起，<a href="https://www.wetsion.site/mybatis-mapper-register-autowire.html">上一篇文章</a>我知道了mapper的bean通过<code>MapperFactoryBean</code>创建，而在<code>MapperFactoryBean</code>初始化的时候调用<code>Configuration#addMapper</code>，而<code>Configuration#addMapper</code>调用<code>MapperRegistry#addMapper()</code>，在这里将mapper包装成了<code>MapperProxyFactory</code>放入缓存中，着重看下这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">addMapper</span><span class="params">(Class&lt;T&gt; type)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (type.isInterface()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (hasMapper(type)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> BindingException(<span class="string">"Type "</span> + type + <span class="string">" is already known to the MapperRegistry."</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">boolean</span> loadCompleted = <span class="keyword">false</span>;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        knownMappers.put(type, <span class="keyword">new</span> MapperProxyFactory&lt;&gt;(type));</span><br><span class="line">        <span class="comment">// It's important that the type is added before the parser is run</span></span><br><span class="line">        <span class="comment">// otherwise the binding may automatically be attempted by the</span></span><br><span class="line">        <span class="comment">// mapper parser. If the type is already known, it won't try.</span></span><br><span class="line">        MapperAnnotationBuilder parser = <span class="keyword">new</span> MapperAnnotationBuilder(config, type);</span><br><span class="line">        parser.parse();</span><br><span class="line">        loadCompleted = <span class="keyword">true</span>;</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!loadCompleted) &#123;</span><br><span class="line">          knownMappers.remove(type);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>上一篇文章就说到，<code>MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type); parser.parse();</code>是将mapper中的方法解析成对于的MappedStatement对象。在<code>MapperAnnotationBuilder</code>的构造方法中，对assistant属性进行了初始化（assistant是<code>MapperBuilderAssistant</code>对象，后面会通过这个助手类创建cache），再看下<code>parse()</code>这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    String resource = type.toString();</span><br><span class="line">    <span class="keyword">if</span> (!configuration.isResourceLoaded(resource)) &#123;</span><br><span class="line">      loadXmlResource();</span><br><span class="line">      configuration.addLoadedResource(resource);</span><br><span class="line">      assistant.setCurrentNamespace(type.getName());</span><br><span class="line">      parseCache();</span><br><span class="line">      parseCacheRef();</span><br><span class="line">      Method[] methods = type.getMethods();</span><br><span class="line">      <span class="keyword">for</span> (Method method : methods) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          <span class="comment">// issue #237</span></span><br><span class="line">          <span class="keyword">if</span> (!method.isBridge()) &#123;</span><br><span class="line">            parseStatement(method);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IncompleteElementException e) &#123;</span><br><span class="line">          configuration.addIncompleteMethod(<span class="keyword">new</span> MethodResolver(<span class="keyword">this</span>, method));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    parsePendingMethods();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>其中，对<code>assistant</code>助手类设置了命名空间（这个namespace后面将用于作为cache的ID），<code>parseCache()</code>就是判断mapper接口是否有<code>@CacheNamespace</code>注解修饰，如果有，则接入二级缓存：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parseCache</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    CacheNamespace cacheDomain = type.getAnnotation(CacheNamespace.class);</span><br><span class="line">    <span class="keyword">if</span> (cacheDomain != <span class="keyword">null</span>) &#123;</span><br><span class="line">      Integer size = cacheDomain.size() == <span class="number">0</span> ? <span class="keyword">null</span> : cacheDomain.size();</span><br><span class="line">      Long flushInterval = cacheDomain.flushInterval() == <span class="number">0</span> ? <span class="keyword">null</span> : cacheDomain.flushInterval();</span><br><span class="line">      Properties props = convertToProperties(cacheDomain.properties());</span><br><span class="line">      assistant.useNewCache(cacheDomain.implementation(), cacheDomain.eviction(), flushInterval, size, cacheDomain.readWrite(), cacheDomain.blocking(), props);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>通过<code>assistant</code>助手类对象，创建一个新的cache对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Cache <span class="title">useNewCache</span><span class="params">(Class&lt;? extends Cache&gt; typeClass,</span></span></span><br><span class="line"><span class="function"><span class="params">      Class&lt;? extends Cache&gt; evictionClass,</span></span></span><br><span class="line"><span class="function"><span class="params">      Long flushInterval,</span></span></span><br><span class="line"><span class="function"><span class="params">      Integer size,</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="keyword">boolean</span> readWrite,</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="keyword">boolean</span> blocking,</span></span></span><br><span class="line"><span class="function"><span class="params">      Properties props)</span> </span>&#123;</span><br><span class="line">    Cache cache = <span class="keyword">new</span> CacheBuilder(currentNamespace)</span><br><span class="line">        .implementation(valueOrDefault(typeClass, PerpetualCache.class))</span><br><span class="line">        .addDecorator(valueOrDefault(evictionClass, LruCache.class))</span><br><span class="line">        .clearInterval(flushInterval)</span><br><span class="line">        .size(size)</span><br><span class="line">        .readWrite(readWrite)</span><br><span class="line">        .blocking(blocking)</span><br><span class="line">        .properties(props)</span><br><span class="line">        .build();</span><br><span class="line">    configuration.addCache(cache);</span><br><span class="line">    currentCache = cache;</span><br><span class="line">    <span class="keyword">return</span> cache;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>前面说到，namespace作为cache的ID，这在CacheBuilder的构造方法中进行了设置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">CacheBuilder</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.id = id;</span><br><span class="line">    <span class="keyword">this</span>.decorators = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>通过CacheBuilder对象，进行一系列属性配置，最后通过<code>build()</code>方法创建Cache对象，将属性装配到Cache对象中，再返回：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Cache <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    setDefaultImplementations();</span><br><span class="line">    Cache cache = newBaseCacheInstance(implementation, id);</span><br><span class="line">    setCacheProperties(cache);</span><br><span class="line">    <span class="keyword">if</span> (PerpetualCache.class.equals(cache.getClass())) &#123;</span><br><span class="line">      <span class="keyword">for</span> (Class&lt;? extends Cache&gt; decorator : decorators) &#123;</span><br><span class="line">        cache = newCacheDecoratorInstance(decorator, cache);</span><br><span class="line">        setCacheProperties(cache);</span><br><span class="line">      &#125;</span><br><span class="line">      cache = setStandardDecorators(cache);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!LoggingCache.class.isAssignableFrom(cache.getClass())) &#123;</span><br><span class="line">      cache = <span class="keyword">new</span> LoggingCache(cache);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cache;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>再回到<code>MapperBuilderAssistant#useNewCache()</code>，创建完cache对象之后，通过<code>configuration.addCache(cache)</code>将cache对象存到<code>Configuration</code>的<code>caches</code>这样一个map中，并在当前的<code>MapperBuilderAssistant</code>对象assistant的currentCache属性保存一份（在后面会用到）。</p>
+<p>cache对象已经创建好了，那么是怎么装配到mapper接口中方法对应的MappedStatement对象中的呢，接着看<code>MapperAnnotationBuilder#parse()</code>方法，在<code>parseCache()</code>之后，foreach遍历所有的方法，然后通过<code>parseStatement()</code>解析生成MappedStatement对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">parseStatement</span><span class="params">(Method method)</span> </span>&#123;</span><br><span class="line">    Class&lt;?&gt; parameterTypeClass = getParameterType(method);</span><br><span class="line">    LanguageDriver languageDriver = getLanguageDriver(method);</span><br><span class="line">    SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);</span><br><span class="line">    <span class="keyword">if</span> (sqlSource != <span class="keyword">null</span>) &#123;</span><br><span class="line">      Options options = method.getAnnotation(Options.class);</span><br><span class="line">      <span class="keyword">final</span> String mappedStatementId = type.getName() + <span class="string">"."</span> + method.getName();</span><br><span class="line">      Integer fetchSize = <span class="keyword">null</span>;</span><br><span class="line">      Integer timeout = <span class="keyword">null</span>;</span><br><span class="line">      StatementType statementType = StatementType.PREPARED;</span><br><span class="line">      ResultSetType resultSetType = <span class="keyword">null</span>;</span><br><span class="line">      SqlCommandType sqlCommandType = getSqlCommandType(method);</span><br><span class="line">      <span class="keyword">boolean</span> isSelect = sqlCommandType == SqlCommandType.SELECT;</span><br><span class="line">      <span class="keyword">boolean</span> flushCache = !isSelect;</span><br><span class="line">      <span class="keyword">boolean</span> useCache = isSelect;</span><br><span class="line">      KeyGenerator keyGenerator;</span><br><span class="line">      String keyProperty = <span class="keyword">null</span>;</span><br><span class="line">      String keyColumn = <span class="keyword">null</span>;</span><br><span class="line">      <span class="keyword">if</span> (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) &#123;</span><br><span class="line">        <span class="comment">// first check for SelectKey annotation - that overrides everything else</span></span><br><span class="line">        SelectKey selectKey = method.getAnnotation(SelectKey.class);</span><br><span class="line">        <span class="keyword">if</span> (selectKey != <span class="keyword">null</span>) &#123;</span><br><span class="line">          keyGenerator = handleSelectKeyAnnotation(selectKey, mappedStatementId, getParameterType(method), languageDriver);</span><br><span class="line">          keyProperty = selectKey.keyProperty();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (options == <span class="keyword">null</span>) &#123;</span><br><span class="line">          keyGenerator = configuration.isUseGeneratedKeys() ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          keyGenerator = options.useGeneratedKeys() ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;</span><br><span class="line">          keyProperty = options.keyProperty();</span><br><span class="line">          keyColumn = options.keyColumn();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        keyGenerator = NoKeyGenerator.INSTANCE;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (options != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (FlushCachePolicy.TRUE.equals(options.flushCache())) &#123;</span><br><span class="line">          flushCache = <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (FlushCachePolicy.FALSE.equals(options.flushCache())) &#123;</span><br><span class="line">          flushCache = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        useCache = options.useCache();</span><br><span class="line">        fetchSize = options.fetchSize() &gt; -<span class="number">1</span> || options.fetchSize() == Integer.MIN_VALUE ? options.fetchSize() : <span class="keyword">null</span>; <span class="comment">//issue #348</span></span><br><span class="line">        timeout = options.timeout() &gt; -<span class="number">1</span> ? options.timeout() : <span class="keyword">null</span>;</span><br><span class="line">        statementType = options.statementType();</span><br><span class="line">        resultSetType = options.resultSetType();</span><br><span class="line">      &#125;</span><br><span class="line">      String resultMapId = <span class="keyword">null</span>;</span><br><span class="line">      ResultMap resultMapAnnotation = method.getAnnotation(ResultMap.class);</span><br><span class="line">      <span class="keyword">if</span> (resultMapAnnotation != <span class="keyword">null</span>) &#123;</span><br><span class="line">        resultMapId = String.join(<span class="string">","</span>, resultMapAnnotation.value());</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isSelect) &#123;</span><br><span class="line">        resultMapId = parseResultMap(method);</span><br><span class="line">      &#125;</span><br><span class="line">      assistant.addMappedStatement(</span><br><span class="line">          mappedStatementId,</span><br><span class="line">          sqlSource,</span><br><span class="line">          statementType,</span><br><span class="line">          sqlCommandType,</span><br><span class="line">          fetchSize,</span><br><span class="line">          timeout,</span><br><span class="line">          <span class="comment">// ParameterMapID</span></span><br><span class="line">          <span class="keyword">null</span>,</span><br><span class="line">          parameterTypeClass,</span><br><span class="line">          resultMapId,</span><br><span class="line">          getReturnType(method),</span><br><span class="line">          resultSetType,</span><br><span class="line">          flushCache,</span><br><span class="line">          useCache,</span><br><span class="line">          <span class="comment">// TODO gcode issue #577</span></span><br><span class="line">          <span class="keyword">false</span>,</span><br><span class="line">          keyGenerator,</span><br><span class="line">          keyProperty,</span><br><span class="line">          keyColumn,</span><br><span class="line">          <span class="comment">// DatabaseID</span></span><br><span class="line">          <span class="keyword">null</span>,</span><br><span class="line">          languageDriver,</span><br><span class="line">          <span class="comment">// ResultSets</span></span><br><span class="line">          options != <span class="keyword">null</span> ? nullOrEmpty(options.resultSets()) : <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>该方法中，先根据方法的注解和方法传参获取sql资源，即判断是否有<code>@Insert</code>、<code>@Update</code>、<code>Select</code>、<code>@Delete</code>注解，如果有这些注解，获取注解中的sql语句，根据注解中的sql语句和传参创建SqlSource对象。</p>
+<ul>
+<li><p>如果SqlSource对象不为空</p>
+<ul>
+<li><p>再获取方法上<code>@Options</code>注解（<code>@Options</code>注解可以配置是否使用缓存、是否主键自增、主键的列名等属性）</p>
+</li>
+<li><p>再根据sql类型创建不同的主键生成器<code>KeyGenerator</code></p>
+<ul>
+<li><p>如果是Insert和Update类型，再获取方法上的<code>@Selectkey</code>注解</p>
+<ul>
+<li><p>如果<code>@SelectKey</code>注解存在，根据selectKey注解也创建一个MapperStatement对象，它的id是原方法对应的MapperStatement对象ID再加上<code>!selectKey</code>后缀（原MapperStatement对象ID为类全限定名加上<code>.</code>加上方法名），调用助手类<strong><em>assistant.addMappedStatement</em></strong>创建（暂放在后面说），并创建<code>SelectKeyGenerator</code>放入<code>Configuration</code>的keyGenerators中</p>
+</li>
+<li><p>如果<code>@SelectKey</code>注解不存在，则按照<code>@Options</code>注解配置的或者<code>Configuration</code>中配置的</p>
+</li>
+</ul>
+</li>
+<li><p>如果是非Insert和Update，使用<code>NoKeyGenerator</code></p>
+</li>
+</ul>
+</li>
+<li><p>如果<code>@Options</code>注解存在，获取该注解的属性，覆盖默认配置</p>
+</li>
+<li><p>调用当前助手类<code>MapperBuilderAssistant</code>对象assistant的<code>addMappedStatement()</code>方法</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>着重看一下<code>MapperBuilderAssistant#addMappedStatement()</code>，该方法主要用于创建MappedStatement，并通过<code>cache(currentCache)</code>，将上面步骤中<code>MapperBuilderAssistant#useNewCache()</code>创建并放入当前MapperBuilderAssistant对象的cache，与创建的MappedStatement绑定，再将<code>MappedStatement</code>对象放入到<code>Configuration</code>的mappedStatements中保存。</p>
+<p>至此，关于<code>MappedStatement</code>中cache的来源以及cache如何和<code>MappedStatement</code>绑定的，就已经明了了。</p>
+<hr>
+<p>回到文章前面，看到的<code>CachingExecutor</code>的<code>query()</code>的地方，通过<code>Cache cache = ms.getCache()</code>获取缓存对象cache</p>
+<ul>
+<li><p>如果cache存在，并且isUseCache，则按照二级缓存情况处理。</p>
+<ul>
+<li><p>先通过<code>TransactionalCacheManager</code>对象<code>tcm.getObject(cache, key)</code>方法根据cache获取对应的<code>TransactionalCache</code>进而再根据key去<code>TransactionalCache</code>中的Cache对象获取缓存，这里key是<code>CacheKey</code>对象，是根据当前方法对应的MappedStatement对象和方法传参以及sql等构建的一个对象，可用来唯一确定查询。</p>
+</li>
+<li><p>如果通过<code>tcm.getObject(cache, key)</code>获取的缓存为空，则调用<code>BaseExecutor#query()</code>获取查询结果，再将查询结果通过<code>tcm.putObject(cache, key, list);</code>放入二级缓存  </p>
+</li>
+<li><p>结果返回</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>如果cache不存在，则如同上篇一级缓存的文章说的，调用<code>BaseExecutor</code>的<code>query()</code>查询，返回结果</li>
+</ul>
+<p><br></p>
+<p>&emsp;&emsp;<code>TransactionalCacheManager</code>是一个<code>TransactionalCache</code>的管理类，内部维护了一个<code>Cache</code>:<code>TransactionalCache</code>的键值对的map。而<code>TransactionalCache</code>是对Cache对象包装了一层，这个Cache对象就是<code>MappedStatement</code>中的cache，所以当<code>TransactionalCacheManager.getObject()</code>时，本质上还是从Cache中获取，那还包装一层<code>TransactionalCache</code>是不是有些多余呢，并不是，而是为了put操作，这也是接下来解释前文说的，为什么缓存在sqlSession会话提交之后才生效。</p>
+<p>看一下<code>TransactionalCache#putObject()</code>和<code>#getObject()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getObject</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">  Object object = delegate.getObject(key);</span><br><span class="line">  <span class="keyword">if</span> (object == <span class="keyword">null</span>) &#123;</span><br><span class="line">    entriesMissedInCache.add(key);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (clearOnCommit) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> object;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">putObject</span><span class="params">(Object key, Object object)</span> </span>&#123;</span><br><span class="line">  entriesToAddOnCommit.put(key, object);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，我在读缓存时，是从<code>delegate</code>（Cache对象）中获取key对应的值，而写入时，是往<code>entriesToAddOnCommit</code>中put。<code>entriesToAddOnCommit</code>是什么呢，是一个HashMap，可以理解为是一个待提交保存的集合，由此可见，在写缓存时并没有直接写入Cache。那么再看<code>TransactionalCache#commit()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">commit</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (clearOnCommit) &#123;</span><br><span class="line">    delegate.clear();</span><br><span class="line">  &#125;</span><br><span class="line">  flushPendingEntries();</span><br><span class="line">  reset();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">reset</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  clearOnCommit = <span class="keyword">false</span>;</span><br><span class="line">  entriesToAddOnCommit.clear();</span><br><span class="line">  entriesMissedInCache.clear();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">flushPendingEntries</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (Map.Entry&lt;Object, Object&gt; entry : entriesToAddOnCommit.entrySet()) &#123;</span><br><span class="line">    delegate.putObject(entry.getKey(), entry.getValue());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (Object entry : entriesMissedInCache) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!entriesToAddOnCommit.containsKey(entry)) &#123;</span><br><span class="line">      delegate.putObject(entry, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，当进行会话提交时，会将待提交集合entriesToAddOnCommit中的数据迁移至Cache对象中，然后再将entriesToAddOnCommit清空。</p>
+<p>至此，二级缓存的实现就已经了解了，结合上一篇一级缓存的学习，可以发现，使用二级缓存之后，查询数据，先尝试从二级缓存中拿数据，没有则去一级缓存中拿，一级缓存中再没有，才去查询数据库。</p>
+<blockquote>
+<p>补充：<br>对前文创建Cache做一些补充，其实返回Cache对象是被包装了很层的Cache对象，以<code>@CacheNamespace</code>的默认配置来看，在创建对象时，这层层包装的最底层是<code>PerpetualCache</code>，然后被<code>LruCache</code>包装，<code>LruCache</code>再被<code>ScheduledCache</code>包装，<code>ScheduledCache</code>再被<code>SerializedCache</code>包装，<code>SerializedCache</code>再被<code>LoggingCache</code>包装，<code>LoggingCache</code>再被<code>SynchronizedCache</code>包装，默认最终返回的是<code>SynchronizedCache</code>对象。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/qrcode.jpg" alt="秋月 wechat" style="width: 200px; max-width: 100%;">
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客！</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>随缘打赏，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechatpay.jpeg" alt="秋月 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="秋月 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/mybatis-first-cache.html" rel="next" title="Mybatis源码学习：一级缓存">
+                <i class="fa fa-chevron-left"></i> Mybatis源码学习：一级缓存
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/spring-boot-actuator-update-log-level.html" rel="prev" title="SpringBoot：整合Actuator实现动态修改日志级别">
+                SpringBoot：整合Actuator实现动态修改日志级别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <div class="bdsharebuttonbox">
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+    <a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a>
+    <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+    <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a class="bds_count" data-cmd="count"></a>
+  </div>
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "2",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "share": {
+        "bdSize": "16",
+        "bdStyle": "0"
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zOTk4Mi8xNjUwOQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="秋月">
+            
+              <p class="site-author-name" itemprop="name">秋月</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#示例实践"><span class="nav-number">1.</span> <span class="nav-text">示例实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码学习"><span class="nav-number">2.</span> <span class="nav-text">源码学习</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">秋月</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="/static/api/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1fNQtTsvxkDhgo9Pgdshn2Mi-gzGzoHsz", "Tv5DAh2kf7e9qd3CT0wGNADx");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

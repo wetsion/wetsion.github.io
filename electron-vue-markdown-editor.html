@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="vue,electron,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Electron学习和小试牛刀">
+<meta name="keywords" content="vue,electron">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Electron学习和小试牛刀">
+<meta property="og:url" content="https://www.wetsion.site/electron-vue-markdown-editor.html">
+<meta property="og:site_name" content="秋月的博客">
+<meta property="og:description" content="Electron学习和小试牛刀">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.loli.net/2020/03/03/GhM9dUtk8mZ7w2z.png">
+<meta property="og:updated_time" content="2020-03-03T13:42:20.500Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Electron学习和小试牛刀">
+<meta name="twitter:description" content="Electron学习和小试牛刀">
+<meta name="twitter:image" content="https://i.loli.net/2020/03/03/GhM9dUtk8mZ7w2z.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.wetsion.site/electron-vue-markdown-editor.html">
+
+
+
+
+
+  <title>Electron学习和小试牛刀 | 秋月的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?157fdaff31a179bb4aedd99ddf1a8c32";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋月的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            友情链接
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wetsion.site/electron-vue-markdown-editor.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="秋月">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋月的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Electron学习和小试牛刀</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-03T00:00:00+08:00">
+                2020-03-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/前端/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/electron-vue-markdown-editor.html" class="leancloud_visitors" data-flag-title="Electron学习和小试牛刀">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Electron学习和小试牛刀
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;前段时间发现了一个好玩的东西：「Electron」，electron是什么呢，electron让前端开发者使用js、html、css就可以构建跨平台的桌面应用程序，electron框架解决了底层原生比较难搞的部分，提供了丰富的API，以及打包生成安装程序，让前端开发者能更专注在应用本身上。</p>
+<p>&emsp;&emsp;简言之，通过electron，写js也可以开发桌面app了。</p>
+<p>&emsp;&emsp;当我刚看到这个东西，心里还是挺兴奋的，为现在JS的强大而感慨。然后立马着手学习，比葫芦画瓢，上手开发了个桌面MarkDown编辑器。</p>
+<p>&emsp;&emsp;首先还是先了解一些基本概念，以及electron提供的API，赋予了我们哪些能力。</p>
+<p>&emsp;&emsp;electron本质上是将Chromium和Node合并在了同一个运行环境中，也可以理解为它相当于封装了一个浏览器，我们开发的其实还是web页面，只不过运行在了内置浏览器中，而Node则支持了与操作系统交互。所以，electron的应用架构主要是基于「主进程」和「渲染进程」。</p>
+<h4 id="主进程"><a href="#主进程" class="headerlink" title="主进程"></a>主进程</h4><p>&emsp;&emsp;主进程，从目录结构和代码来说，就是运行<code>package.json</code>和<code>src/main.js</code>脚本的进程。主进程负责创建窗口，创建web页面，包括与操作系统交互的操作。</p>
+<h4 id="渲染器进程"><a href="#渲染器进程" class="headerlink" title="渲染器进程"></a>渲染器进程</h4><p>&emsp;&emsp;上面说到了主进程是创建窗口，而渲染器进程则是负责在创建好的窗口中渲染页面，例如vue代码将会在渲染器进程中解析运行。</p>
+<p>&emsp;&emsp;再看一些基本API概念，至少在我的桌面markdown编辑器涉及到的：</p>
+<h4 id="ipcMain"><a href="#ipcMain" class="headerlink" title="ipcMain"></a>ipcMain</h4><p>&emsp;&emsp;主进程的通信器，在主进程中使用，用于处理从渲染器进程发送的消息以及向渲染器进程发送消息</p>
+<blockquote>
+<p>接收消息： ipcMain.on(msgName, handler)<br>发送消息： 需要注意的是ipcMain并不像ipcRenderer那样提供了send方法，想要向渲染器进程发消息，需要换种方式：BrowserWindow.getFocusedWindow().webContents.send(msgName, data)</p>
+</blockquote>
+<h4 id="ipcRenderer"><a href="#ipcRenderer" class="headerlink" title="ipcRenderer"></a>ipcRenderer</h4><p>&emsp;&emsp;渲染器进程的通信器，在渲染器进程中使用，向主进程发送消息和接收主进程消息。</p>
+<blockquote>
+<p>接收消息： ipcRenderer.on(msgName, handler)<br>发送消息： ipcRenderer.send(msgName)</p>
+</blockquote>
+<h4 id="BrowserWindow"><a href="#BrowserWindow" class="headerlink" title="BrowserWindow"></a>BrowserWindow</h4><p>&emsp;&emsp;窗口，在主进程中创建</p>
+<h4 id="app"><a href="#app" class="headerlink" title="app"></a>app</h4><p>&emsp;&emsp;在主进程中，控制应用程序的事件生命周期，提供了诸如<code>ready</code>、<code>window-all-closed</code>等事件监听，以及例如<code>quit()</code>这样的方法</p>
+<h4 id="dialog"><a href="#dialog" class="headerlink" title="dialog"></a>dialog</h4><p>&emsp;&emsp;对话框，主进程中执行，弹出例如打开文件、保存文件、警告这样的<strong>操作系统对话框</strong></p>
+<blockquote>
+<p>举两个常用的方法，在我的项目里也有涉及的：<br>dialog.showSaveDialog(options, callback) 弹出保存文件对话框，可在options参数中指定保存文件类型<br>dialog.showOpenDialog(options, callback) 弹出打开文件对话框，可在options参数中指定诸如是否能多选文件</p>
+</blockquote>
+<h4 id="Menu"><a href="#Menu" class="headerlink" title="Menu"></a>Menu</h4><p>&emsp;&emsp;主进程中执行，创建操作系统原生应用菜单、上下文菜单，（包括Mac系统下的dock菜单）</p>
+<blockquote>
+<p>通常调用<code>Menu.buildFromTemplate(template)</code>方法指定模版创建菜单对象，再在应用窗口创建完成后，通过<code>Menu.setApplicationMenu(menus)</code>方法设置应用的系统菜单，针对Mac系统，通过<code>app.dock.setMenu(menu)</code>设置dock菜单</p>
+</blockquote>
+<p>&emsp;&emsp;上述就是项目组用到的基本API，markdown编辑器的UI主要是通过vue + elementUI实现，也就是<code>electron-vue</code>，并引用了一个第三方开源的MarkDown组件：<code>mavonEditor</code>，总体还是挺简单的，实现的功能包括窗口最大化、窗口最小化、关闭窗口、自定义窗口顶部标题栏、自定义系统菜单、自定义dock菜单、打开文件、保存文件、拖拽打开文件。</p>
+<p>&emsp;&emsp;项目版本：<code>vue 2.5.16</code>、<code>vue-electron 1.0.6</code>、<code>electron 2.0.4</code>、<code>element-ui 2.13.0</code></p>
+<p>主进程执行的脚本，<code>src/main.js</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; app, BrowserWindow, Menu, ipcMain, dialog &#125; <span class="keyword">from</span> <span class="string">'electron'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'development'</span>) &#123;</span><br><span class="line">  global.__static = <span class="built_in">require</span>(<span class="string">'path'</span>).join(__dirname, <span class="string">'/static'</span>).replace(<span class="regexp">/\\/g</span>, <span class="string">'\\\\'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> mainWindow</span><br><span class="line"><span class="keyword">const</span> winURL = process.env.NODE_ENV === <span class="string">'development'</span></span><br><span class="line">  ? <span class="string">`http://localhost:9080`</span></span><br><span class="line">  : <span class="string">`file://<span class="subst">$&#123;__dirname&#125;</span>/index.html`</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> aboutWindow</span><br><span class="line"><span class="keyword">const</span> aboutWindowUrl = process.env.NODE_ENV === <span class="string">'development'</span></span><br><span class="line">  ? <span class="string">`http://localhost:9080/#about`</span></span><br><span class="line">  : <span class="string">`file://<span class="subst">$&#123;__dirname&#125;</span>/index.html#/about`</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> windowCount = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createWindow</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 初始化主窗口</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  mainWindow = <span class="keyword">new</span> BrowserWindow(&#123;</span><br><span class="line">    title: <span class="string">'秋月编辑器'</span>,</span><br><span class="line">    height: <span class="number">600</span>,</span><br><span class="line">    useContentSize: <span class="literal">true</span>,</span><br><span class="line">    width: <span class="number">1000</span>,</span><br><span class="line">    frame: <span class="literal">false</span>, <span class="comment">// 默认标题栏去掉</span></span><br><span class="line">    <span class="comment">// resizable: false, // 是否窗口可调整大小</span></span><br><span class="line">    webPreferences: &#123;</span><br><span class="line">      nodeIntegration: <span class="literal">true</span>,</span><br><span class="line">      nodeIntegrationInWorker: <span class="literal">true</span>,</span><br><span class="line">      webSecurity: <span class="literal">false</span>,</span><br><span class="line">      devTools: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  mainWindow.loadURL(winURL)</span><br><span class="line">  windowCount ++</span><br><span class="line"></span><br><span class="line">  mainWindow.on(<span class="string">'closed'</span>, () =&gt; &#123;</span><br><span class="line">    mainWindow = <span class="literal">null</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 去除原生顶部菜单栏</span></span><br><span class="line">  mainWindow.setMenu(<span class="literal">null</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 自定义Mac 的 dock菜单</span></span><br><span class="line">  <span class="keyword">const</span> dockMenu = Menu.buildFromTemplate([</span><br><span class="line">    &#123;</span><br><span class="line">      label: <span class="string">'新窗口'</span>,</span><br><span class="line">      click () &#123;</span><br><span class="line">        createWindow()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ])</span><br><span class="line">  app.dock.setMenu(dockMenu)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> mainWindow</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 主进程监听渲染器进程发来的事件</span></span><br><span class="line"><span class="comment">// 关闭窗口</span></span><br><span class="line">ipcMain.on(<span class="string">'close'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'window count: '</span>, windowCount)</span><br><span class="line">  BrowserWindow.getFocusedWindow().close()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">ipcMain.on(<span class="string">'min'</span>, () =&gt; &#123;</span><br><span class="line">  BrowserWindow.getFocusedWindow().minimize()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">ipcMain.on(<span class="string">'max'</span>, () =&gt; &#123;</span><br><span class="line">  BrowserWindow.getFocusedWindow().maximize()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">ipcMain.on(<span class="string">'unmax'</span>, () =&gt; &#123;</span><br><span class="line">  BrowserWindow.getFocusedWindow().unmaximize()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">ipcMain.on(<span class="string">'ondragstart'</span>, (event, filePath) =&gt; &#123;</span><br><span class="line">  event.sender.startDrag(&#123;</span><br><span class="line">    file: filePath,</span><br><span class="line">    icon: <span class="string">`file://<span class="subst">$&#123;__dirname&#125;</span>/title/max.png`</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">ipcMain.on(<span class="string">'render-process-open-file'</span>, () =&gt; &#123;</span><br><span class="line">  dialog.showSaveDialog(</span><br><span class="line">    &#123;</span><br><span class="line">      filters: [</span><br><span class="line">        &#123; <span class="attr">name</span>: <span class="string">'MarkDown'</span>, <span class="attr">extensions</span>: [<span class="string">'md'</span>] &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;,</span><br><span class="line">    (filename, bookmark) =&gt; &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'render-process-open-file:'</span>, filename)</span><br><span class="line">      <span class="keyword">if</span> (filename) &#123;</span><br><span class="line">        BrowserWindow.getFocusedWindow().webContents.send(<span class="string">'main-process-save-to-another'</span>, filename)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">app.on(<span class="string">'ready'</span>, () =&gt; &#123;</span><br><span class="line">  createWindow()</span><br><span class="line">	<span class="keyword">let</span> menu = Menu.buildFromTemplate([</span><br><span class="line">    &#123;</span><br><span class="line">      submenu: [</span><br><span class="line">        &#123;</span><br><span class="line">          label: <span class="string">'关于秋月编辑器'</span>,</span><br><span class="line">          click (event, focusedWindow, focusedWebContents) &#123;</span><br><span class="line">            <span class="keyword">if</span> (aboutWindow) &#123;</span><br><span class="line">              aboutWindow.show()</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">              aboutWindow = <span class="keyword">new</span> BrowserWindow(&#123;</span><br><span class="line">                title: <span class="string">'关于秋月编辑器'</span>,</span><br><span class="line">                height: <span class="number">400</span>,</span><br><span class="line">                useContentSize: <span class="literal">true</span>,</span><br><span class="line">                width: <span class="number">300</span>,</span><br><span class="line">                resizable: <span class="literal">false</span>,</span><br><span class="line">                frame: <span class="literal">true</span>,</span><br><span class="line">                webPreferences: &#123;</span><br><span class="line">                  nodeIntegration: <span class="literal">true</span>,</span><br><span class="line">                  nodeIntegrationInWorker: <span class="literal">true</span>,</span><br><span class="line">                  webSecurity: <span class="literal">false</span>,</span><br><span class="line">                  devTools: <span class="literal">true</span></span><br><span class="line">                &#125;</span><br><span class="line">              &#125;)</span><br><span class="line">              aboutWindow.loadURL(aboutWindowUrl)</span><br><span class="line">              aboutWindow.on(<span class="string">'closed'</span>, () =&gt; &#123;</span><br><span class="line">                aboutWindow = <span class="literal">null</span></span><br><span class="line">              &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          label: <span class="string">'关闭当前'</span>,</span><br><span class="line">          role: <span class="string">'close'</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          label: <span class="string">'退出'</span>,</span><br><span class="line">          role: <span class="string">'quit'</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;,</span><br><span class="line">		&#123;</span><br><span class="line">			label: <span class="string">'文件'</span>,</span><br><span class="line">			submenu: [</span><br><span class="line">        &#123;</span><br><span class="line">          label: <span class="string">'打开..'</span>,</span><br><span class="line">          click (event, focusedWindow, focusedWebContents) &#123;</span><br><span class="line">            dialog.showOpenDialog(</span><br><span class="line">              &#123;</span><br><span class="line">                properties: [<span class="string">'openFile'</span>],</span><br><span class="line">                filters: [</span><br><span class="line">                  &#123; <span class="attr">name</span>: <span class="string">'MarkDown'</span>, <span class="attr">extensions</span>: [<span class="string">'md'</span>] &#125;</span><br><span class="line">                ]</span><br><span class="line">              &#125;,</span><br><span class="line">              (filePaths, bookmarks) =&gt; &#123;</span><br><span class="line">                <span class="built_in">console</span>.log(filePaths)</span><br><span class="line">                <span class="keyword">if</span> (filePaths) &#123;</span><br><span class="line">                  focusedWindow.webContents.send(<span class="string">'main-process-open-file'</span>, filePaths)</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">            )</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          label: <span class="string">'保存'</span>,</span><br><span class="line">          click (event, focusedWindow, focusedWebContents) &#123;</span><br><span class="line">            focusedWindow.webContents.send(<span class="string">'main-process-save'</span>, <span class="string">'save'</span>)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          label: <span class="string">'另存为'</span>,</span><br><span class="line">          click (event, focusedWindow, focusedWebContents) &#123;</span><br><span class="line">            dialog.showSaveDialog(</span><br><span class="line">              &#123;</span><br><span class="line">                filters: [</span><br><span class="line">                  &#123; <span class="attr">name</span>: <span class="string">'MarkDown'</span>, <span class="attr">extensions</span>: [<span class="string">'md'</span>] &#125;</span><br><span class="line">                ]</span><br><span class="line">              &#125;,</span><br><span class="line">              (filename, bookmark) =&gt; &#123;</span><br><span class="line">                <span class="built_in">console</span>.log(filename)</span><br><span class="line">                <span class="built_in">console</span>.log(bookmark)</span><br><span class="line">                <span class="keyword">if</span> (filename) &#123;</span><br><span class="line">                  focusedWindow.webContents.send(<span class="string">'main-process-save-to-another'</span>, filename)</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">            )</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">		&#125;</span><br><span class="line">	])</span><br><span class="line">	Menu.setApplicationMenu(menu)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">app.on(<span class="string">'window-all-closed'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span> (process.platform !== <span class="string">'darwin'</span>) &#123;</span><br><span class="line">    app.quit()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">app.on(<span class="string">'activate'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span> (mainWindow === <span class="literal">null</span>) &#123;</span><br><span class="line">    createWindow()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>主要创建窗口，以及监听处理各类事件。</p>
+<p>自定义的窗口顶部标题栏：</p>
+<p><strong>title.vue</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">	&lt;div id=<span class="string">"newTitle"</span>&gt;</span><br><span class="line">		&lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"left"</span>&gt;</span><br><span class="line">			&lt;title-btn type=<span class="string">"max"</span>/&gt;</span><br><span class="line">			&lt;title-btn type=<span class="string">"min"</span>/&gt;</span><br><span class="line">			&lt;title-btn type=<span class="string">"close"</span>/&gt;</span><br><span class="line">		&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">		&lt;div class="center"&gt;</span></span><br><span class="line"><span class="regexp">			&lt;span&gt;&#123;&#123; label &#125;&#125;&lt;/</span>span&gt;</span><br><span class="line">		&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">		&lt;div class="right"&gt;</span></span><br><span class="line"><span class="regexp">			&lt;span class="name"&gt;秋月编辑器-MarkDown神器&lt;/</span>span&gt;</span><br><span class="line">		&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">	&lt;/</span>div&gt;</span><br><span class="line">&lt;<span class="regexp">/template&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;script&gt;</span></span><br><span class="line"><span class="regexp">	import TitleBtn from './</span>TitleBtn/title-btn<span class="string">'</span></span><br><span class="line"><span class="string">	import &#123; getMdFilePath &#125; from '</span>@/utils/storerage<span class="string">'</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  export default &#123;</span></span><br><span class="line"><span class="string">		name: '</span>title<span class="string">',</span></span><br><span class="line"><span class="string">		components: &#123; TitleBtn &#125;,</span></span><br><span class="line"><span class="string">		props: ['</span>label<span class="string">']</span></span><br><span class="line"><span class="string">	&#125;</span></span><br><span class="line"><span class="string">&lt;/script&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>title-btn.vue</strong>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">	&lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"title-btn"</span> @click=<span class="string">"click"</span>&gt;</span><br><span class="line">		&lt;img v-<span class="keyword">if</span>=<span class="string">"type === 'max' &amp;&amp; !isMax"</span> id=<span class="string">"maxLogo"</span> src=<span class="string">"~@/assets/title/max.png"</span> alt=<span class="string">"electron-vue"</span>&gt;</span><br><span class="line">		&lt;img v-<span class="keyword">if</span>=<span class="string">"type === 'max' &amp;&amp; isMax"</span> id=<span class="string">"maxLogo"</span> src=<span class="string">"~@/assets/title/unmax.png"</span> alt=<span class="string">"electron-vue"</span>&gt;</span><br><span class="line">		&lt;img v-<span class="keyword">if</span>=<span class="string">"type === 'min'"</span> id=<span class="string">"minLogo"</span> src=<span class="string">"~@/assets/title/min.png"</span> alt=<span class="string">"electron-vue"</span>&gt;</span><br><span class="line">		&lt;img v-<span class="keyword">if</span>=<span class="string">"type === 'close'"</span> id=<span class="string">"closeLogo"</span> src=<span class="string">"~@/assets/title/close.png"</span> alt=<span class="string">"electron-vue"</span>&gt;</span><br><span class="line">	&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">	<span class="keyword">const</span> style = &#123;</span><br><span class="line">		min: &#123;</span><br><span class="line">			backgroundColor: <span class="string">'red'</span>,</span><br><span class="line">			right: <span class="string">'100px'</span></span><br><span class="line">		&#125;,</span><br><span class="line">		max: &#123;</span><br><span class="line">			<span class="comment">// backgroundColor: 'yellow',</span></span><br><span class="line">			backgroundImage: <span class="string">'~@/assets/title/max.png'</span>,</span><br><span class="line">			right: <span class="string">'60px'</span></span><br><span class="line">		&#125;,</span><br><span class="line">		close: &#123;</span><br><span class="line">			backgroundColor: <span class="string">'black'</span>,</span><br><span class="line">			right: <span class="string">'20px'</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">		name: <span class="string">'title-btn'</span>,</span><br><span class="line">		props: [<span class="string">'type'</span>],</span><br><span class="line">		data () &#123;</span><br><span class="line">			<span class="keyword">return</span> &#123;</span><br><span class="line">				isMax: <span class="literal">false</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;,</span><br><span class="line">		computed: &#123;</span><br><span class="line">			style () &#123;</span><br><span class="line">				<span class="keyword">return</span> style[<span class="keyword">this</span>.type]</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;,</span><br><span class="line">		methods: &#123;</span><br><span class="line">			click () &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(<span class="keyword">this</span>.type)</span><br><span class="line">				<span class="keyword">switch</span> (<span class="keyword">this</span>.type) &#123;</span><br><span class="line">					<span class="keyword">case</span> <span class="string">'max'</span>:</span><br><span class="line">						<span class="keyword">if</span> (!<span class="keyword">this</span>.isMax) &#123;</span><br><span class="line">							<span class="keyword">this</span>.$electron.ipcRenderer.send(<span class="string">'max'</span>)</span><br><span class="line">							<span class="keyword">this</span>.isMax = <span class="literal">true</span></span><br><span class="line">						&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">							<span class="keyword">this</span>.$electron.ipcRenderer.send(<span class="string">'unmax'</span>)</span><br><span class="line">							<span class="keyword">this</span>.isMax = <span class="literal">false</span></span><br><span class="line">						&#125;</span><br><span class="line">						<span class="keyword">break</span>;</span><br><span class="line">					<span class="keyword">case</span> <span class="string">'min'</span>:</span><br><span class="line">						<span class="keyword">this</span>.$electron.ipcRenderer.send(<span class="string">'min'</span>)</span><br><span class="line">						<span class="keyword">break</span>;</span><br><span class="line">					<span class="keyword">case</span> <span class="string">'close'</span>:</span><br><span class="line">						<span class="keyword">this</span>.$electron.ipcRenderer.send(<span class="string">'close'</span>)</span><br><span class="line">						<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+<p>markdown编辑主页面：</p>
+<p><code>edit.vue</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div id=<span class="string">"editorDiv"</span>&gt;</span><br><span class="line">		&lt;mavon-editor v-model=<span class="string">"markdownText"</span> :toolbars=<span class="string">"toolbarConfig"</span> :style=<span class="string">"editorStyle"</span> @save=<span class="string">"save"</span>/&gt;</span><br><span class="line">	&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  <span class="keyword">import</span> &#123; saveMdFilePath &#125; <span class="keyword">from</span> <span class="string">'@/utils/storerage'</span></span><br><span class="line">  <span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line">  <span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    name: <span class="string">'edit'</span>,</span><br><span class="line">    data () &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        markdownText: <span class="string">''</span>,</span><br><span class="line">        sourceFilePath: <span class="literal">undefined</span>,</span><br><span class="line">        toolbarConfig: &#123;</span><br><span class="line">          bold: <span class="literal">true</span>, <span class="comment">// 粗体</span></span><br><span class="line">          italic: <span class="literal">true</span>, <span class="comment">// 斜体</span></span><br><span class="line">          header: <span class="literal">true</span>, <span class="comment">// 标题</span></span><br><span class="line">          underline: <span class="literal">true</span>, <span class="comment">// 下划线</span></span><br><span class="line">          strikethrough: <span class="literal">true</span>, <span class="comment">// 中划线</span></span><br><span class="line">          mark: <span class="literal">true</span>, <span class="comment">// 标记</span></span><br><span class="line">          superscript: <span class="literal">true</span>, <span class="comment">// 上角标</span></span><br><span class="line">          subscript: <span class="literal">true</span>, <span class="comment">// 下角标</span></span><br><span class="line">          quote: <span class="literal">true</span>, <span class="comment">// 引用</span></span><br><span class="line">          ol: <span class="literal">true</span>, <span class="comment">// 有序列表</span></span><br><span class="line">          ul: <span class="literal">true</span>, <span class="comment">// 无序列表</span></span><br><span class="line">          link: <span class="literal">true</span>, <span class="comment">// 链接</span></span><br><span class="line">          imagelink: <span class="literal">true</span>, <span class="comment">// 图片链接</span></span><br><span class="line">          code: <span class="literal">true</span>, <span class="comment">// code</span></span><br><span class="line">          table: <span class="literal">true</span>, <span class="comment">// 表格</span></span><br><span class="line">          fullscreen: <span class="literal">false</span>, <span class="comment">// 全屏编辑</span></span><br><span class="line">          readmodel: <span class="literal">false</span>, <span class="comment">// 沉浸式阅读</span></span><br><span class="line">          htmlcode: <span class="literal">true</span>, <span class="comment">// 展示html源码</span></span><br><span class="line">          help: <span class="literal">true</span>, <span class="comment">// 帮助</span></span><br><span class="line">          <span class="comment">/* 1.3.5 */</span></span><br><span class="line">          undo: <span class="literal">true</span>, <span class="comment">// 上一步</span></span><br><span class="line">          redo: <span class="literal">true</span>, <span class="comment">// 下一步</span></span><br><span class="line">          trash: <span class="literal">true</span>, <span class="comment">// 清空</span></span><br><span class="line">          save: <span class="literal">true</span>, <span class="comment">// 保存（触发events中的save事件）</span></span><br><span class="line">          <span class="comment">/* 1.4.2 */</span></span><br><span class="line">          navigation: <span class="literal">true</span>, <span class="comment">// 导航目录</span></span><br><span class="line">          <span class="comment">/* 2.1.8 */</span></span><br><span class="line">          alignleft: <span class="literal">true</span>, <span class="comment">// 左对齐</span></span><br><span class="line">          aligncenter: <span class="literal">true</span>, <span class="comment">// 居中</span></span><br><span class="line">          alignright: <span class="literal">true</span>, <span class="comment">// 右对齐</span></span><br><span class="line">          <span class="comment">/* 2.2.1 */</span></span><br><span class="line">          subfield: <span class="literal">true</span>, <span class="comment">// 单双栏模式</span></span><br><span class="line">          preview: <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    computed: &#123;</span><br><span class="line">      editorStyle () &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="built_in">window</span>.innerHeight)</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            height: <span class="string">'530px'</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted () &#123;</span><br><span class="line">      <span class="keyword">const</span> editorDiv = <span class="built_in">document</span>.getElementById(<span class="string">'editorDiv'</span>)</span><br><span class="line"></span><br><span class="line">      editorDiv.addEventListener(<span class="string">'drop'</span>, (event) =&gt; &#123;</span><br><span class="line">        event.preventDefault()</span><br><span class="line">        <span class="keyword">const</span> file = event.dataTransfer.files</span><br><span class="line">        <span class="keyword">const</span> path = file[<span class="number">0</span>].path</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'drag file:'</span>, path)</span><br><span class="line">        <span class="keyword">this</span>.openMd(path)</span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">      editorDiv.addEventListener(<span class="string">'dragover'</span>, (event) =&gt; &#123;</span><br><span class="line">        event.preventDefault()</span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 渲染器监听主进程点击保存文件后发送的事件</span></span><br><span class="line">      <span class="keyword">this</span>.$electron.ipcRenderer.on(<span class="string">'main-process-save'</span>, () =&gt; &#123;</span><br><span class="line">        <span class="keyword">this</span>.save()</span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 渲染器监听主进程点击另存为后发送的事件</span></span><br><span class="line">      <span class="keyword">this</span>.$electron.ipcRenderer.on(<span class="string">'main-process-save-to-another'</span>, (event, data) =&gt; &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(data)</span><br><span class="line">        <span class="keyword">this</span>.saveAnother(data)</span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 渲染器监听主进程打开文件后发送的事件</span></span><br><span class="line">      <span class="keyword">this</span>.$electron.ipcRenderer.on(<span class="string">'main-process-open-file'</span>, (event, data) =&gt; &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(data)</span><br><span class="line">        <span class="keyword">this</span>.openMd(data[<span class="number">0</span>])</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * 保存</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      save () &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.sourceFilePath) &#123;</span><br><span class="line">          <span class="comment">// 如果是已经打开的文档，直接保存</span></span><br><span class="line">          <span class="keyword">this</span>.saveMd(<span class="keyword">this</span>.sourceFilePath)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">// 如果是空白文档，先选择存储地址,然后后续按照「另存为」方式</span></span><br><span class="line">          <span class="keyword">this</span>.$electron.ipcRenderer.send(<span class="string">'render-process-open-file'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * 另存为</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      saveAnother (path) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'save another:'</span>, path)</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.sourceFilePath) &#123;</span><br><span class="line">          <span class="comment">// 如果已经是打开的文件，则直接另存为</span></span><br><span class="line">          <span class="keyword">this</span>.saveMd(path)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">// 如果是空白文件，另存时则保存并打开文件</span></span><br><span class="line">          <span class="keyword">this</span>.sourceFilePath = path</span><br><span class="line">          <span class="keyword">this</span>.saveMd(path)</span><br><span class="line">          <span class="keyword">this</span>.openMd(path)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      saveMd (path) &#123;</span><br><span class="line">        fs.writeFileSync(path, <span class="keyword">this</span>.markdownText)</span><br><span class="line">        <span class="keyword">this</span>.$message.success(<span class="string">'保存成功！'</span>)</span><br><span class="line">      &#125;,</span><br><span class="line">      openMd (path) &#123;</span><br><span class="line">        <span class="keyword">this</span>.sourceFilePath = path</span><br><span class="line">        <span class="keyword">const</span> content = fs.readFileSync(path)</span><br><span class="line">        <span class="keyword">const</span> cttStr = content.toString()</span><br><span class="line">        <span class="built_in">console</span>.log(cttStr)</span><br><span class="line">        <span class="keyword">this</span>.markdownText = cttStr</span><br><span class="line">        <span class="comment">// this.$electron.ipcRenderer.send('ondragstart', path)</span></span><br><span class="line">        <span class="comment">// 告知主界面文件路径</span></span><br><span class="line">        <span class="keyword">this</span>.$emit(<span class="string">'set-file-path'</span>, <span class="keyword">this</span>.sourceFilePath)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+<p>效果如下：</p>
+<p><img src="https://i.loli.net/2020/03/03/GhM9dUtk8mZ7w2z.png" alt="WX20200303-160511@2x.png"></p>
+<p>源码地址：<a href="https://github.com/wetsion/electron-vue-demo" rel="external nofollow noopener noreferrer" target="_blank">https://github.com/wetsion/electron-vue-demo</a></p>
+<p>electron文档地址：<a href="https://www.electronjs.org/docs" rel="external nofollow noopener noreferrer" target="_blank">https://www.electronjs.org/docs</a></p>
+<p>electron还有很多功能，还需要通过实践去学习探索。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/qrcode.jpg" alt="秋月 wechat" style="width: 200px; max-width: 100%;">
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客！</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>随缘打赏，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechatpay.jpeg" alt="秋月 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="秋月 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vue/" rel="tag"># vue</a>
+          
+            <a href="/tags/electron/" rel="tag"># electron</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/spring-security-oauth2-authorization-code-redis.html" rel="next" title="Spring Security Oauth2：实现授权码Redis模式">
+                <i class="fa fa-chevron-left"></i> Spring Security Oauth2：实现授权码Redis模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/es-nested-reverse-nested.html" rel="prev" title="ES嵌套查询与退出嵌套">
+                ES嵌套查询与退出嵌套 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <div class="bdsharebuttonbox">
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+    <a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a>
+    <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+    <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a class="bds_count" data-cmd="count"></a>
+  </div>
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "2",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "share": {
+        "bdSize": "16",
+        "bdStyle": "0"
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zOTk4Mi8xNjUwOQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="秋月">
+            
+              <p class="site-author-name" itemprop="name">秋月</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#主进程"><span class="nav-number">1.</span> <span class="nav-text">主进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#渲染器进程"><span class="nav-number">2.</span> <span class="nav-text">渲染器进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ipcMain"><span class="nav-number">3.</span> <span class="nav-text">ipcMain</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ipcRenderer"><span class="nav-number">4.</span> <span class="nav-text">ipcRenderer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BrowserWindow"><span class="nav-number">5.</span> <span class="nav-text">BrowserWindow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#app"><span class="nav-number">6.</span> <span class="nav-text">app</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dialog"><span class="nav-number">7.</span> <span class="nav-text">dialog</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Menu"><span class="nav-number">8.</span> <span class="nav-text">Menu</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">秋月</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="/static/api/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1fNQtTsvxkDhgo9Pgdshn2Mi-gzGzoHsz", "Tv5DAh2kf7e9qd3CT0wGNADx");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

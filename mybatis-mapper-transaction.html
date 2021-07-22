@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon.ico?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Mybatis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Mybatis中关于事务的学习">
+<meta name="keywords" content="Java,Mybatis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis源码学习：mapper关于事务的补充">
+<meta property="og:url" content="https://www.wetsion.site/mybatis-mapper-transaction.html">
+<meta property="og:site_name" content="秋月的博客">
+<meta property="og:description" content="Mybatis中关于事务的学习">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-09T15:35:02.532Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mybatis源码学习：mapper关于事务的补充">
+<meta name="twitter:description" content="Mybatis中关于事务的学习">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.wetsion.site/mybatis-mapper-transaction.html">
+
+
+
+
+
+  <title>Mybatis源码学习：mapper关于事务的补充 | 秋月的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?157fdaff31a179bb4aedd99ddf1a8c32";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋月的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            友情链接
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wetsion.site/mybatis-mapper-transaction.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="秋月">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋月的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Mybatis源码学习：mapper关于事务的补充</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-09T00:00:00+08:00">
+                2019-07-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/Mybatis/" itemprop="url" rel="index">
+                    <span itemprop="name">Mybatis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/mybatis-mapper-transaction.html" class="leancloud_visitors" data-flag-title="Mybatis源码学习：mapper关于事务的补充">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Mybatis中关于事务的学习
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;最近在整理某个系统需要优化的点的时候，发现在查询时速度很慢，经过排查代码，发现同事在某个service出现了循环调用另一个service的方法，而另一份servcei是查询数据库的，而这些service都没使用<code>@@Transactional</code>事务，同时，根据debug打印的sql查询语句，发现单条sql语句查询都很快，初步怀疑是频繁创建会话，重复打开关闭连接消耗了大量时间，于是重写了这个service的方法，直接使用相应的mapper，然后使用<code>@@Transactional</code>声明为一个事务，这样所有的sql都在一个会话中了，只打开关闭了一次连接，响应的速度极大的提高了。</p>
+<p>&emsp;&emsp;那么，在之前的mapper注册注入的文章中，学习到通过注入mapper的方式时，每次调用方法都是创建一个sqlsession。而使用<code>@@Transactional</code>事务注解后，service方法中所有mapper的调用都是一个会话了，在service方法结束之后统一对会话进行提交，那么这又是怎么实现的呢。</p>
+<p>&emsp;&emsp;通过之前的学习，已知道注入后，本质上是<code>SqlSessionTemplate</code>通过内部代理类<code>SqlSessionInterceptor</code>对象<code>sqlSessionProxy</code>，再看一遍<code>SqlSessionInterceptor</code>的<code>invoke()</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">      SqlSession sqlSession = getSqlSession(</span><br><span class="line">          SqlSessionTemplate.<span class="keyword">this</span>.sqlSessionFactory,</span><br><span class="line">          SqlSessionTemplate.<span class="keyword">this</span>.executorType,</span><br><span class="line">          SqlSessionTemplate.<span class="keyword">this</span>.exceptionTranslator);</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        Object result = method.invoke(sqlSession, args);</span><br><span class="line">        <span class="keyword">if</span> (!isSqlSessionTransactional(sqlSession, SqlSessionTemplate.<span class="keyword">this</span>.sqlSessionFactory)) &#123;</span><br><span class="line">          sqlSession.commit(<span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">        Throwable unwrapped = unwrapThrowable(t);</span><br><span class="line">        <span class="keyword">if</span> (SqlSessionTemplate.<span class="keyword">this</span>.exceptionTranslator != <span class="keyword">null</span> &amp;&amp; unwrapped <span class="keyword">instanceof</span> PersistenceException) &#123;</span><br><span class="line">          closeSqlSession(sqlSession, SqlSessionTemplate.<span class="keyword">this</span>.sqlSessionFactory);</span><br><span class="line">          sqlSession = <span class="keyword">null</span>;</span><br><span class="line">          Throwable translated = SqlSessionTemplate.<span class="keyword">this</span>.exceptionTranslator.translateExceptionIfPossible((PersistenceException) unwrapped);</span><br><span class="line">          <span class="keyword">if</span> (translated != <span class="keyword">null</span>) &#123;</span><br><span class="line">            unwrapped = translated;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> unwrapped;</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (sqlSession != <span class="keyword">null</span>) &#123;</span><br><span class="line">          closeSqlSession(sqlSession, SqlSessionTemplate.<span class="keyword">this</span>.sqlSessionFactory);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;先<code>getSqlSession()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SqlSession <span class="title">getSqlSession</span><span class="params">(SqlSessionFactory sessionFactory, ExecutorType executorType, PersistenceExceptionTranslator exceptionTranslator)</span> </span>&#123;</span><br><span class="line">    SqlSessionHolder holder = (SqlSessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);</span><br><span class="line">    SqlSession session = sessionHolder(executorType, holder);</span><br><span class="line">    <span class="keyword">if</span> (session != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> session;</span><br><span class="line">    &#125;</span><br><span class="line">    LOGGER.debug(() -&gt; <span class="string">"Creating a new SqlSession"</span>);</span><br><span class="line">    session = sessionFactory.openSession(executorType);</span><br><span class="line">    registerSessionHolder(sessionFactory, executorType, exceptionTranslator, session);</span><br><span class="line">    <span class="keyword">return</span> session;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;从<code>getSqlSession()</code>这个方法中可以看到，先通过<code>TransactionSynchronizationManager.getResource(sessionFactory)</code>获取<code>SqlSessionHolder</code>，从<code>TransactionSynchronizationManager</code>类的名字似乎是关于事务的，进入getResource这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Map&lt;Object, Object&gt;&gt; resources =</span><br><span class="line">		<span class="keyword">new</span> NamedThreadLocal&lt;&gt;(<span class="string">"Transactional resources"</span>);</span><br><span class="line">   <span class="meta">@Nullable</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">getResource</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">	Object actualKey = TransactionSynchronizationUtils.unwrapResourceIfNecessary(key);</span><br><span class="line">	Object value = doGetResource(actualKey);</span><br><span class="line">	<span class="comment">// 日志打印</span></span><br><span class="line">	<span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Object <span class="title">doGetResource</span><span class="params">(Object actualKey)</span> </span>&#123;</span><br><span class="line">	Map&lt;Object, Object&gt; map = resources.get();</span><br><span class="line">	<span class="keyword">if</span> (map == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	Object value = map.get(actualKey);</span><br><span class="line">	<span class="keyword">if</span> (value <span class="keyword">instanceof</span> ResourceHolder &amp;&amp; ((ResourceHolder) value).isVoid()) &#123;</span><br><span class="line">		map.remove(actualKey);</span><br><span class="line">		<span class="keyword">if</span> (map.isEmpty()) &#123;</span><br><span class="line">			resources.remove();</span><br><span class="line">		&#125;</span><br><span class="line">		value = <span class="keyword">null</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;可以看到，该类的<code>resources</code>属性是一个ThreadLocal对象，泛型是<code>Map&lt;Object, Object&gt;</code>，也就是说保存和当前线程绑定的一个map，然后根据key获取map中保存的对象</p>
+<blockquote>
+<p>service层方法中mapper的调用都是在一个线程中进行的</p>
+</blockquote>
+<p>&emsp;&emsp;而<code>SqlSessionUtils#getSqlSession()</code>根据sessionFactory获取了一个SqlSessionHolder对象，反推之，说明在某个过程中，曾经放入了一个SqlSessionHolder对象，其实在这个方法后面有句<code>registerSessionHolder(sessionFactory, executorType, exceptionTranslator, session);</code>这就是放入的操作，这个操作是在获取不到<code>SqlSessionHolder</code>，也就获取不到session之后，创建一个新的sqlSession，然后构造一个<code>SqlSessionHolder</code>对象，注册到<code>TransactionSynchronizationManager</code>的<code>resources</code>map中，具体看下<code>registerSessionHolder()</code>这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">registerSessionHolder</span><span class="params">(SqlSessionFactory sessionFactory, ExecutorType executorType,</span></span></span><br><span class="line"><span class="function"><span class="params">      PersistenceExceptionTranslator exceptionTranslator, SqlSession session)</span> </span>&#123;</span><br><span class="line">    SqlSessionHolder holder;</span><br><span class="line">    <span class="keyword">if</span> (TransactionSynchronizationManager.isSynchronizationActive()) &#123;</span><br><span class="line">      Environment environment = sessionFactory.getConfiguration().getEnvironment();</span><br><span class="line">      <span class="keyword">if</span> (environment.getTransactionFactory() <span class="keyword">instanceof</span> SpringManagedTransactionFactory) &#123;</span><br><span class="line">        LOGGER.debug(() -&gt; <span class="string">"Registering transaction synchronization for SqlSession ["</span> + session + <span class="string">"]"</span>);</span><br><span class="line">        holder = <span class="keyword">new</span> SqlSessionHolder(session, executorType, exceptionTranslator);</span><br><span class="line">        TransactionSynchronizationManager.bindResource(sessionFactory, holder);</span><br><span class="line">        TransactionSynchronizationManager.registerSynchronization(<span class="keyword">new</span> SqlSessionSynchronization(holder, sessionFactory));</span><br><span class="line">        holder.setSynchronizedWithTransaction(<span class="keyword">true</span>);</span><br><span class="line">        holder.requested();</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (TransactionSynchronizationManager.getResource(environment.getDataSource()) == <span class="keyword">null</span>) &#123;</span><br><span class="line">          LOGGER.debug(() -&gt; <span class="string">"SqlSession ["</span> + session + <span class="string">"] was not registered for synchronization because DataSource is not transactional"</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> TransientDataAccessResourceException(</span><br><span class="line">              <span class="string">"SqlSessionFactory must be using a SpringManagedTransactionFactory in order to use Spring transaction synchronization"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      LOGGER.debug(() -&gt; <span class="string">"SqlSession ["</span> + session + <span class="string">"] was not registered for synchronization because synchronization is not active"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;通过<code>TransactionSynchronizationManager.isSynchronizationActive()</code>判断有事务之后（每当开启一个事务，就会调用<code>TransactionSynchronizationManager#initSynchronization()</code>对synchronizations初始化），并且判断环境中有spring管理的<code>TransactionFactory</code>bean之后，构造SqlSessionHolder对象与sessionFactory绑定，注册到<code>TransactionSynchronizationManager</code>的<code>resources</code>map中。注意，这里有个操作<code>TransactionSynchronizationManager.registerSynchronization(new SqlSessionSynchronization(holder, sessionFactory));</code>，将在后面说到，在service层方法执行完，统一提交事务时会涉及到。</p>
+<p>&emsp;&emsp;结合上述，回到<code>SqlSessionInterceptor#invoke()</code>，可以知道，会尝试从<code>TransactionSynchronizationManager</code>的resources获取当前线程当前sessionFactory对应的SqlSessionHolder，如果之前放入过，则直接取出SqlSessionHolder中持有的sqlSession，如果没，则创建sqlSession返回，再根据是否有声明事务，构造SqlSessionHolder持有sqlSession，再注册进<code>TransactionSynchronizationManager</code>的resources，返回sqlSession。</p>
+<p>&emsp;&emsp;拿到sqlSession后，通过<code>method.invoke(sqlSession, args)</code>直接调用<code>SqlSession</code>的数据操作，获取结果。然后通过<code>isSqlSessionTransactional()</code>判断是否具有事务（尝试从<code>TransactionSynchronizationManager</code>的resources中获取当前线程对应的SqlSessionHolder，如果为空，或者持有的sqlSession不等于当前的sqlSession，说明不具有事务），如果无事务，那么就<code>sqlSession.commit(true)</code>立即提交当前会话。在返回结果之前，会执行<code>closeSqlSession()</code>（ 即同上再次尝试从resources获取<code>SqlSessionHolder</code>，如果不具有事务，则关闭会话）。</p>
+<blockquote>
+<p><code>sqlSession.commit()</code>包含了提交事务的作用，但在与spring的事务整合时发现，一些属性会影响使其执行不到其中<code>transaction.commit()</code>，然后靠后续通过<code>Connection</code>调用<code>NaticeSession</code>发送<code>commit</code>指令给mysql来提交</p>
+</blockquote>
+<p>&emsp;&emsp;从以上了解到了没有事务情况下，每次mapper调用都会创建新的会话，并且会话会在执行完后立即提交，而有事务时，共用一个会话，执行完数据操作后并不会提交会话，通过debug日志知道，在service方法执行完后，统一提交了事务，那么是如何统一提交事务呢，以及为什么未使用事务mapper执行完就提交会话了呢。</p>
+<p>&emsp;&emsp;service的方法在被执行调用时，实际上是被代理类<code>CglibAopProxy</code>动态代理，并进入到通用回调<code>DynamicAdvisedInterceptor</code>中，看一下这个回调中的<code>intercept()</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object proxy, Method method, Object[] args, MethodProxy methodProxy)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">			Object oldProxy = <span class="keyword">null</span>;</span><br><span class="line">			<span class="keyword">boolean</span> setProxyContext = <span class="keyword">false</span>;</span><br><span class="line">			Object target = <span class="keyword">null</span>;</span><br><span class="line">			TargetSource targetSource = <span class="keyword">this</span>.advised.getTargetSource();</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="keyword">if</span> (<span class="keyword">this</span>.advised.exposeProxy) &#123;</span><br><span class="line">					oldProxy = AopContext.setCurrentProxy(proxy);</span><br><span class="line">					setProxyContext = <span class="keyword">true</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				target = targetSource.getTarget();</span><br><span class="line">				Class&lt;?&gt; targetClass = (target != <span class="keyword">null</span> ? target.getClass() : <span class="keyword">null</span>);</span><br><span class="line">				List&lt;Object&gt; chain = <span class="keyword">this</span>.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);</span><br><span class="line">				<span class="keyword">if</span> (chain.isEmpty() &amp;&amp; Modifier.isPublic(method.getModifiers())) &#123;</span><br><span class="line">					Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);</span><br><span class="line">					retVal = methodProxy.invoke(target, argsToUse);</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span> &#123;</span><br><span class="line">					retVal = <span class="keyword">new</span> CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();</span><br><span class="line">				&#125;</span><br><span class="line">				retVal = processReturnType(proxy, target, method, retVal);</span><br><span class="line">				<span class="keyword">return</span> retVal;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">finally</span> &#123;</span><br><span class="line">				<span class="keyword">if</span> (target != <span class="keyword">null</span> &amp;&amp; !targetSource.isStatic()) &#123;</span><br><span class="line">				targetSource.releaseTarget(target);</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> (setProxyContext) &#123;</span><br><span class="line">				AopContext.setCurrentProxy(oldProxy);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;这里是一个关键点，对于有事务和无事务的分岔点就在这里，检查该方法（切点）的<code>InvokerInterceptor</code>数量，如果为空，那么就跳过创建<code>MethodInvocation</code>，而直接调用代理目标也就是service方法，如果不为空，则创建一个<code>CglibMethodInvocation</code>并执行。而如果方法有<code>@Transactional</code>注解修饰，该方法（切点）会拥有一个<code>TransactionInterceptor</code>，所以就不直接调用service方法，而是创建<code>CglibMethodInvocation</code>调用。</p>
+<h4 id="无事务的情况"><a href="#无事务的情况" class="headerlink" title="无事务的情况"></a>无事务的情况</h4><p>&emsp;&emsp;无事务时，直接调用代理目标也就是service方法，service调用mapper的方法，而调用mapper的方法，从前面的学习已经知道实质上调用<code>SimpleExecutor</code>的<code>doUpdate()</code>或<code>doQuery()</code>，而这两个方法实际上是调用<code>StatementHandler</code>的update和query，而再往后则是调用<code>PreparedStatement</code>的<code>execute()</code>，最终调用mysql的jdbc驱动包中原始会话<code>NaticeSession</code>的<code>execSQL()</code>，第一次先建立连接，第二次发送<code>SET autocommit=1</code>，告诉mysql后续的操作都是自动提交，所以后续直接执行sql获取结果</p>
+<h4 id="有事务的情况"><a href="#有事务的情况" class="headerlink" title="有事务的情况"></a>有事务的情况</h4><p>&emsp;&emsp;就如上面所说，创建<code>CglibMethodInvocation</code>，然后反射调用<code>TransactionInterceptor</code>，<code>TransactionInterceptor</code>继承自<code>TransactionAspectSupport</code>，<code>TransactionInterceptor</code>的<code>invoke()</code>调用<code>TransactionAspectSupport</code>的<code>invokeWithinTransaction()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">invokeWithinTransaction</span><span class="params">(Method method, @Nullable Class&lt;?&gt; targetClass,</span></span></span><br><span class="line"><span class="function"><span class="params">			<span class="keyword">final</span> InvocationCallback invocation)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// If the transaction attribute is null, the method is non-transactional.</span></span><br><span class="line">		TransactionAttributeSource tas = getTransactionAttributeSource();</span><br><span class="line">		<span class="keyword">final</span> TransactionAttribute txAttr = (tas != <span class="keyword">null</span> ? tas.getTransactionAttribute(method, targetClass) : <span class="keyword">null</span>);</span><br><span class="line">		<span class="keyword">final</span> PlatformTransactionManager tm = determineTransactionManager(txAttr);</span><br><span class="line">		<span class="keyword">final</span> String joinpointIdentification = methodIdentification(method, targetClass, txAttr);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (txAttr == <span class="keyword">null</span> || !(tm <span class="keyword">instanceof</span> CallbackPreferringPlatformTransactionManager)) &#123;</span><br><span class="line">			<span class="comment">// Standard transaction demarcation with getTransaction and commit/rollback calls.</span></span><br><span class="line">			TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, joinpointIdentification);</span><br><span class="line"></span><br><span class="line">			Object retVal;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				retVal = invocation.proceedWithInvocation();</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">catch</span> (Throwable ex) &#123;	completeTransactionAfterThrowing(txInfo, ex);</span><br><span class="line">				<span class="keyword">throw</span> ex;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">finally</span> &#123;</span><br><span class="line">				cleanupTransactionInfo(txInfo);</span><br><span class="line">			&#125;</span><br><span class="line">			commitTransactionAfterReturning(txInfo);</span><br><span class="line">			<span class="keyword">return</span> retVal;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">// CallbackPreferringPlatformTransactionManager情况下的处理</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;可以观察到，这是一个环绕切面，先通过<code>retVal = invocation.proceedWithInvocation()</code>调用代理目标，也就是调用service方法执行切点，然后后置地调用<code>commitTransactionAfterReturning(txInfo)</code>，这里是在切点执行之后，用于提交事务的。在调用service方法时，调用mapper的方法，在最终调用mysql驱动包时，建立连接后，给mysql发送了<code>SET autocommit=0</code>，即意味着后续的sql执行都先不提交，而在<code>commitTransactionAfterReturning()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">commitTransactionAfterReturning</span><span class="params">(@Nullable TransactionInfo txInfo)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (txInfo != <span class="keyword">null</span> &amp;&amp; txInfo.getTransactionStatus() != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="comment">// 日志打印省略</span></span><br><span class="line">			txInfo.getTransactionManager().commit(txInfo.getTransactionStatus());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;这里获取到的TransactionManager是<code>DataSourceTransactionManager</code>，<code>DataSourceTransactionManager</code>继承<code>AbstractPlatformTransactionManager</code>，commit方法中再次调用<code>processCommit()</code>，<code>processCommit()</code>调用<code>doCommit()</code>，在<code>doCommit()</code>中获取连接<code>Connection</code>，调用<code>Connection#commit()</code>，最终也是调用<code>NativeSession#execSQL()</code>，只不过给mysql发送的是<code>commit</code>，即提交之前发送的所有sql。</p>
+<blockquote>
+<p>在<code>processCommit()</code>中调用<code>doCommit()</code>之前，有一步调用<code>triggerBeforeCommit(status)</code>，而在这个方法中调用<code>TransactionSynchronizationUtils.triggerBeforeCommit(status.isReadOnly())</code>，而在前文中，提到过，在创建sqlSession时，会构造SqlSessionHolder，然后注册到<code>TransactionSynchronizationManager</code>，同时<code>TransactionSynchronizationManager.registerSynchronization(new SqlSessionSynchronization(holder, sessionFactory));</code>创建了<code>SqlSessionSynchronization</code>对象注册。而<code>TransactionSynchronizationUtils.triggerBeforeCommit(status.isReadOnly())</code>中即对<code>TransactionSynchronizationManager</code>中所有的<code>TransactionSynchronization</code>对象遍历，执行它们的<code>beforeCommit()</code>，而<code>SqlSessionSynchronization</code>的<code>beforeCommit()</code>中，获取持有sqlSessionHolder进而获取SqlSession，然后调用<code>commit()</code>。</p>
+</blockquote>
+<p>学习到这里，对mybatis的会话关于事务方面做了些补充，但学习的越多，疑惑也就越多（坑也就越多…），比如关于Spring如何管理事务的，将带着这些疑问进行后续的学习，做好学习笔记。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/uploads/qrcode.jpg" alt="秋月 wechat" style="width: 200px; max-width: 100%;">
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客！</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>随缘打赏，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/uploads/wechatpay.jpeg" alt="秋月 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="秋月 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/spring-boot-actuator-update-log-level.html" rel="next" title="SpringBoot：整合Actuator实现动态修改日志级别">
+                <i class="fa fa-chevron-left"></i> SpringBoot：整合Actuator实现动态修改日志级别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/java-source-concurrent-aqs.html" rel="prev" title="Java源码学习：AbstractQueuedSynchronizer(AQS)学习">
+                Java源码学习：AbstractQueuedSynchronizer(AQS)学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <div class="bdsharebuttonbox">
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+    <a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a>
+    <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+    <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a class="bds_count" data-cmd="count"></a>
+  </div>
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "2",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "share": {
+        "bdSize": "16",
+        "bdStyle": "0"
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zOTk4Mi8xNjUwOQ=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="秋月">
+            
+              <p class="site-author-name" itemprop="name">秋月</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#无事务的情况"><span class="nav-number">1.</span> <span class="nav-text">无事务的情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#有事务的情况"><span class="nav-number">2.</span> <span class="nav-text">有事务的情况</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">秋月</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io" rel="external nofollow noopener noreferrer">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next" rel="external nofollow noopener noreferrer">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="/static/api/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("1fNQtTsvxkDhgo9Pgdshn2Mi-gzGzoHsz", "Tv5DAh2kf7e9qd3CT0wGNADx");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

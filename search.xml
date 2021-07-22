@@ -60,8 +60,8 @@
         <category>Redis</category>
       </categories>
       <tags>
-        <tag>中间件</tag>
         <tag>Redis</tag>
+        <tag>中间件</tag>
       </tags>
   </entry>
   <entry>
@@ -172,8 +172,8 @@
         <category>后端</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>踩坑</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
